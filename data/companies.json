@@ -1,0 +1,125 @@
+[
+  {
+    "id": "comp-001",
+    "name": "Al-Fanar Infrastructure & Contracting Co.",
+    "name_ar": "شركة الفنار للمقاولات والبنية التحتية",
+    "cr_number": "1010234567",
+    "company_size": "Medium",
+    "saudi_regions": [
+      "Riyadh Region",
+      "Eastern Province",
+      "Makkah Region"
+    ],
+    "saudi_cities": [
+      "Riyadh",
+      "Dammam",
+      "Khobar",
+      "Jeddah",
+      "NEOM"
+    ],
+    "main_activities": [
+      "Roads, Bridges & Civil Infrastructure",
+      "Building Construction",
+      "Electromechanical (MEP) Works"
+    ],
+    "secondary_activities": [
+      "Electrical & Power Transmission",
+      "Water, Sanitation & Dams"
+    ],
+    "contractor_classification": "Roads & Buildings",
+    "classification_grade": 2,
+    "experience_years": 14,
+    "manpower_count": 180,
+    "equipment_tags": [
+      "Heavy Excavators",
+      "Asphalt Pavers & Rollers",
+      "Mobile & Tower Cranes",
+      "Concrete Batching & Pumps",
+      "Generators & Substation Testers"
+    ],
+    "comfortable_project_size": "20M - 100M SAR",
+    "preferred_project_value_sar": 45000000,
+    "guarantee_capability_sar": 25000000,
+    "certifications": [
+      "SCA_MUQAWIL",
+      "ARAMCO_APPROVED",
+      "SEC_PREQUALIFIED",
+      "NEOM_REGISTERED",
+      "ISO_9001",
+      "ZATCA_CLEARANCE"
+    ],
+    "direct_tender_interest": true,
+    "subcontracting_interest": true,
+    "vendor_registration_interest": true,
+    "excluded_project_types": [
+      "Residential villas",
+      "Small commercial retail fitout"
+    ],
+    "annual_turnover": 85000000,
+    "cpv_codes": [
+      "45000000",
+      "45233000",
+      "72000000"
+    ],
+    "regions": [
+      "EL30",
+      "EL41",
+      "EL52"
+    ],
+    "capacity_tags": [
+      "civil engineering",
+      "infrastructure",
+      "road construction",
+      "mep works",
+      "asphalt",
+      "earthworks"
+    ],
+    "exclusion_flags": []
+  },
+  {
+    "id": "comp-test-99",
+    "name": "Saudi Binladin Group",
+    "name_ar": "مجموعة بن لادن السعودية",
+    "cr_number": "",
+    "company_size": "Large",
+    "saudi_regions": [
+      "Riyadh Region"
+    ],
+    "saudi_cities": [
+      "Riyadh"
+    ],
+    "main_activities": [
+      "Roads, Bridges & Civil Infrastructure"
+    ],
+    "secondary_activities": [],
+    "contractor_classification": "Roads & Buildings",
+    "classification_grade": 1,
+    "experience_years": 10,
+    "manpower_count": 100,
+    "equipment_tags": [],
+    "comfortable_project_size": "10M - 50M SAR",
+    "preferred_project_value_sar": 30000000,
+    "guarantee_capability_sar": 15000000,
+    "certifications": [
+      "SCA_MUQAWIL",
+      "ISO_9001"
+    ],
+    "direct_tender_interest": true,
+    "subcontracting_interest": true,
+    "vendor_registration_interest": true,
+    "excluded_project_types": [],
+    "annual_turnover": 50000000,
+    "cpv_codes": [
+      "45000000",
+      "45233000"
+    ],
+    "regions": [
+      "EL30"
+    ],
+    "capacity_tags": [
+      "civil engineering",
+      "roads"
+    ],
+    "exclusion_flags": []
+  }
+]

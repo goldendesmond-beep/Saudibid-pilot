@@ -1,0 +1,6 @@
+{
+  "name": "BidPilot",
+  "description": "AI-powered public procurement intelligence, tender matching, and proposal drafting platform.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
