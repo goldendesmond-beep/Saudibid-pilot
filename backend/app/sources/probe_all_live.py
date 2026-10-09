@@ -126,6 +126,39 @@ def probe_single_source(src: Dict[str, Any], timeout_secs: float = 2.5) -> Dict[
             status_category = "RUNTIME_ENVIRONMENT_BLOCKED"
             exact_limitation = f"Connection timeout: {str(e)[:100]}"
 
+    # Determine authentication requirement string
+    auth_requirement_str = "NONE"
+    if sid == "src-etimad":
+        auth_requirement_str = "NAFATH_ABSHER_2FA"
+    elif sid == "src-aramco":
+        auth_requirement_str = "SAP_ARIBA_IKTVA"
+    elif auth_req:
+        auth_requirement_str = "SUPPLIER_PORTAL_AUTH"
+
+    # Determine fallback strategy
+    if sid in ["src-etimad", "src-tadawul"]:
+        fallback_str = "ASSISTED_IMPORT"
+    elif sid in ["src-rcjy", "src-ncp"]:
+        fallback_str = "ASSISTED_IMPORT / CONTAINER_EGRESS_CONNECTOR"
+    elif status_category == "AUTH_REQUIRED":
+        fallback_str = "VENDOR_REGISTRATION_PORTAL_DISCOVERY"
+    elif status_category == "WORKING_LIVE":
+        fallback_str = "NONE (LIVE STREAM ACTIVE)"
+    else:
+        fallback_str = "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE"
+
+    # Determine provenance lineage
+    if sid == "src-spa":
+        provenance_str = "SPA_OFFICIAL_GOVERNMENT_LIVE_FEED"
+    elif sid == "src-etimad":
+        provenance_str = "ETIMAD_OFFICIAL_FILE_AND_URL_IMPORT"
+    elif sid == "src-tadawul":
+        provenance_str = "TADAWUL_OFFICIAL_DISCLOSURE_IMPORT"
+    else:
+        provenance_str = f"OFFICIAL_PORTAL_{sid.upper().replace('-', '_')}"
+
+    now_iso = datetime.utcnow().isoformat()
+
     return {
         "source_id": sid,
         "source_name": name,
@@ -134,11 +167,17 @@ def probe_single_source(src: Dict[str, Any], timeout_secs: float = 2.5) -> Dict[
         "access_method": access_method,
         "status": status_category,
         "requires_auth": auth_req,
+        "authentication_requirement": auth_requirement_str,
         "real_records_count": real_records_count,
         "response_time_ms": duration_ms,
         "http_status_code": http_code,
         "exact_limitation_reason": exact_limitation,
-        "last_audited": datetime.utcnow().isoformat(),
+        "failure_reason": exact_limitation if status_category != "WORKING_LIVE" else None,
+        "last_attempt": now_iso,
+        "last_audited": now_iso,
+        "last_successful_live_fetch": now_iso if status_category == "WORKING_LIVE" else None,
+        "fallback": fallback_str,
+        "provenance": provenance_str,
     }
 
 

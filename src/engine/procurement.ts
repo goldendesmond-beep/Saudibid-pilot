@@ -110,8 +110,12 @@ export function computeMatch(profile: CompanyProfile, tender: Tender): MatchResu
     ...(profile.capacity_tags || []),
   ].map((a) => a.toLowerCase());
 
-  const tenderText = `${tender.title} ${tender.description} ${tender.work_category || ""}`.toLowerCase();
-  const matchedActivities = allProfileActivities.filter((act) => tenderText.includes(act));
+  const tenderText = `${tender.title} ${tender.description} ${tender.work_category || ""} ${(tender as unknown as { sector?: string }).sector || ""} ${(tender as unknown as { service_category?: string }).service_category || ""}`.toLowerCase();
+  const matchedActivities = allProfileActivities.filter((act) => {
+    if (tenderText.includes(act)) return true;
+    const tokens = act.split(/[\s,&/]+/).filter((t) => t.length > 3);
+    return tokens.some((token) => tenderText.includes(token));
+  });
   const activityRatio = allProfileActivities.length > 0
     ? matchedActivities.length / Math.min(allProfileActivities.length, 3)
     : 0;
@@ -242,7 +246,7 @@ export function computePricingStats(awards: AwardRecord[], cpv?: string): Pricin
       median: null,
       p25: null,
       p75: null,
-      currency: "EUR",
+      currency: "SAR",
     };
   }
 
@@ -263,7 +267,7 @@ export function computePricingStats(awards: AwardRecord[], cpv?: string): Pricin
     median,
     p25,
     p75,
-    currency: "EUR",
+    currency: "SAR",
   };
 }
 

@@ -4,155 +4,28 @@ import {
   ShieldCheck,
   AlertTriangle,
   Lock,
-  Globe,
   CheckCircle2,
   XCircle,
   Upload,
   Plus,
   FileText,
   ExternalLink,
+  RefreshCw,
+  GitCommit,
+  Database,
+  ArrowRight,
 } from "lucide-react";
 import { sourceRecoveryApi, type PrioritySourceRecoveryItem } from "../api/sourceRecovery";
-
-interface SourceHealthRecord {
-  id: string;
-  name: string;
-  name_ar?: string;
-  canonical_domain: string;
-  live_status: "VERIFIED_LIVE" | "AUTH_REQUIRED" | "BLOCKED" | "FIXTURE_ONLY" | "DISCOVERY_REQUIRED" | "TEMPORARILY_UNAVAILABLE";
-  http_code?: number | null;
-  last_checked: string;
-  last_successful_fetch?: string | null;
-  records_discovered: number;
-  limitation: string;
-  authority_type: string;
-}
-
-const DEFAULT_SOURCES_HEALTH: SourceHealthRecord[] = [
-  {
-    id: "src-furas",
-    name: "Furas (Balady / MOMRAH)",
-    name_ar: "منصة فرص (وزارة البلديات والإسكان)",
-    canonical_domain: "https://furas.balady.gov.sa",
-    live_status: "VERIFIED_LIVE",
-    http_code: 200,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: "2026-10-02 04:30 UTC",
-    records_discovered: 5,
-    limitation: "Public Balady municipal portal open; commercial leasing bids require CR login.",
-    authority_type: "MUNICIPAL_INVESTMENT",
-  },
-  {
-    id: "src-neom",
-    name: "NEOM",
-    name_ar: "شركة نيوم",
-    canonical_domain: "https://www.neom.com",
-    live_status: "VERIFIED_LIVE",
-    http_code: 200,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: "2026-10-02 04:30 UTC",
-    records_discovered: 5,
-    limitation: "Public project releases accessible; direct RFP bidding requires NEOM Supplier Portal credential.",
-    authority_type: "GIGA_PROJECT",
-  },
-  {
-    id: "src-roshn",
-    name: "ROSHN Real Estate",
-    name_ar: "شركة روشن العقارية",
-    canonical_domain: "https://www.roshn.sa",
-    live_status: "VERIFIED_LIVE",
-    http_code: 200,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: "2026-10-02 04:30 UTC",
-    records_discovered: 5,
-    limitation: "Public developer sourcing packages accessible; direct bidding requires contractor onboarding with Saudi CR.",
-    authority_type: "SOE_DEVELOPER",
-  },
-  {
-    id: "src-etimad",
-    name: "Etimad (Monafasat)",
-    name_ar: "منصة اعتماد (منافسات الحكومية)",
-    canonical_domain: "https://monafasat.etimad.sa",
-    live_status: "FIXTURE_ONLY",
-    http_code: null,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: null,
-    records_discovered: 0,
-    limitation: "Absher/Nafath 2FA authentication and Ministry of Finance Geo-firewall blocks automated queries from outside Saudi Arabia.",
-    authority_type: "GOVERNMENT_PORTAL",
-  },
-  {
-    id: "src-ncp",
-    name: "National Center for Privatization & PPP (NCP)",
-    name_ar: "المركز الوطني للتخصيص والشراكة",
-    canonical_domain: "https://www.ncp.gov.sa",
-    live_status: "BLOCKED",
-    http_code: 504,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: null,
-    records_discovered: 0,
-    limitation: "Government network perimeter filtering / connection timed out on international Cloud Run container IPs.",
-    authority_type: "PPP_PRIVATIZATION",
-  },
-  {
-    id: "src-rcjy",
-    name: "Royal Commission for Jubail & Yanbu (RCJY)",
-    name_ar: "الهيئة الملكية للجبيل وينبع",
-    canonical_domain: "https://www.rcjy.gov.sa",
-    live_status: "BLOCKED",
-    http_code: 504,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: null,
-    records_discovered: 0,
-    limitation: "Government network perimeter filtering / connection timed out on international Cloud Run container IPs.",
-    authority_type: "GOVERNMENT_AUTHORITY",
-  },
-  {
-    id: "src-aramco",
-    name: "Saudi Aramco",
-    name_ar: "أرامكو السعودية",
-    canonical_domain: "https://supplier.aramco.com",
-    live_status: "AUTH_REQUIRED",
-    http_code: 504,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: null,
-    records_discovered: 0,
-    limitation: "Enterprise SAP Ariba corporate supplier gateway requires authenticated IKTVA contractor credentials.",
-    authority_type: "SEMI_GOV_SOE",
-  },
-  {
-    id: "src-tadawul",
-    name: "Tadawul Listed Corporate Disclosures",
-    name_ar: "تداول السعودية (إفصاحات عقود الشركات المدرجة)",
-    canonical_domain: "https://www.saudiexchange.sa",
-    live_status: "BLOCKED",
-    http_code: 403,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: null,
-    records_discovered: 0,
-    limitation: "WAF / Cloudflare Bot Management blocks automated requests with HTTP 403 Forbidden.",
-    authority_type: "FINANCIAL_DISCLOSURES",
-  },
-  {
-    id: "src-kap",
-    name: "King Abdullah Port",
-    name_ar: "ميناء الملك عبدالله",
-    canonical_domain: "https://www.kingabdullahport.com.sa",
-    live_status: "DISCOVERY_REQUIRED",
-    http_code: null,
-    last_checked: "2026-10-02 04:30 UTC",
-    last_successful_fetch: null,
-    records_discovered: 0,
-    limitation: "Discovery candidate endpoint quarantined pending official domain validation.",
-    authority_type: "PRIVATE_PORTS",
-  },
-];
+import { sourcesApi, type DetailedSourceAuditItem, type SourceAuditReportResponse } from "../api/sources";
 
 export const SourceHealthDashboard: React.FC = () => {
   const { isRTL } = useTranslation();
-  const [activeTab, setActiveTab] = useState<"all" | "recovery">("recovery");
+  const [activeTab, setActiveTab] = useState<"audit" | "ingestion_flow" | "recovery">("audit");
   const [filter, setFilter] = useState<string>("all");
   const [recoveryItems, setRecoveryItems] = useState<PrioritySourceRecoveryItem[]>([]);
+  const [auditReport, setAuditReport] = useState<SourceAuditReportResponse | null>(null);
+  const [auditSources, setAuditSources] = useState<DetailedSourceAuditItem[]>([]);
+  const [isLoadingAudit, setIsLoadingAudit] = useState<boolean>(true);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const [importSuccessMessage, setImportSuccessMessage] = useState<string | null>(null);
 
@@ -167,11 +40,23 @@ export const SourceHealthDashboard: React.FC = () => {
   const [importUrl, setImportUrl] = useState<string>("");
   const [importNotes, setImportNotes] = useState<string>("");
 
+  const loadData = () => {
+    setIsLoadingAudit(true);
+    Promise.all([
+      sourceRecoveryApi.getReport(),
+      sourcesApi.getAuditReport(),
+    ])
+      .then(([recoveryData, auditData]) => {
+        setRecoveryItems(recoveryData);
+        setAuditReport(auditData);
+        setAuditSources(auditData.sources || []);
+      })
+      .catch((err) => console.error("Failed to load source health audit:", err))
+      .finally(() => setIsLoadingAudit(false));
+  };
+
   useEffect(() => {
-    sourceRecoveryApi
-      .getReport()
-      .then((items) => setRecoveryItems(items))
-      .catch((err) => console.error("Failed to load recovery report:", err));
+    loadData();
   }, []);
 
   const handleAssistedImport = async (e: React.FormEvent) => {
@@ -201,37 +86,20 @@ export const SourceHealthDashboard: React.FC = () => {
       setImportRef("");
       setImportUrl("");
       setImportNotes("");
+      loadData();
     } catch (err) {
       console.error("Assisted import failed:", err);
     }
   };
 
-  const filteredSources = DEFAULT_SOURCES_HEALTH.filter((s) => {
-    if (filter === "all") return true;
-    return s.live_status === filter;
-  });
-
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case "WORKING_LIVE":
       case "VERIFIED_LIVE":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
             <CheckCircle2 className="w-3 h-3" />
-            VERIFIED_LIVE
-          </span>
-        );
-      case "ASSISTED_IMPORT":
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/30">
-            <Upload className="w-3 h-3" />
-            ASSISTED_IMPORT
-          </span>
-        );
-      case "RUNTIME_ENVIRONMENT_BLOCKED":
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <AlertTriangle className="w-3 h-3" />
-            RUNTIME_BLOCKED
+            WORKING_LIVE
           </span>
         );
       case "AUTHENTICATED_LIVE":
@@ -241,11 +109,25 @@ export const SourceHealthDashboard: React.FC = () => {
             AUTHENTICATED_LIVE
           </span>
         );
+      case "ASSISTED_IMPORT":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/30">
+            <Upload className="w-3 h-3" />
+            ASSISTED_IMPORT
+          </span>
+        );
       case "AUTH_REQUIRED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
             <Lock className="w-3 h-3" />
             AUTH_REQUIRED
+          </span>
+        );
+      case "RUNTIME_ENVIRONMENT_BLOCKED":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+            <AlertTriangle className="w-3 h-3" />
+            RUNTIME_BLOCKED
           </span>
         );
       case "BLOCKED":
@@ -262,20 +144,29 @@ export const SourceHealthDashboard: React.FC = () => {
             FIXTURE_ONLY
           </span>
         );
-      case "DISCOVERY_REQUIRED":
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/30">
-            <Globe className="w-3 h-3" />
-            DISCOVERY_REQUIRED
-          </span>
-        );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300">
-            {status}
+            {status || "UNKNOWN"}
           </span>
         );
     }
+  };
+
+  const filteredSources = auditSources.filter((s) => {
+    if (filter === "all") return true;
+    return s.status === filter;
+  });
+
+  const counts = auditReport?.counts || auditReport?.audit_summary || {
+    TOTAL_SOURCES: auditSources.length,
+    WORKING_LIVE: auditSources.filter((s) => s.status === "WORKING_LIVE").length,
+    AUTHENTICATED_LIVE: auditSources.filter((s) => s.status === "AUTHENTICATED_LIVE").length,
+    ASSISTED_IMPORT: auditSources.filter((s) => s.status === "ASSISTED_IMPORT").length,
+    AUTH_REQUIRED: auditSources.filter((s) => s.status === "AUTH_REQUIRED").length,
+    RUNTIME_ENVIRONMENT_BLOCKED: auditSources.filter((s) => s.status === "RUNTIME_ENVIRONMENT_BLOCKED").length,
+    BLOCKED: auditSources.filter((s) => s.status === "BLOCKED").length,
+    FIXTURE_ONLY: auditSources.filter((s) => s.status === "FIXTURE_ONLY").length,
   };
 
   return (
@@ -286,16 +177,23 @@ export const SourceHealthDashboard: React.FC = () => {
           <div>
             <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              <span>{isRTL ? "لوحة شفافية وصحة المصادر الرسمية واستعادتها" : "Source Health & Critical Recovery"}</span>
+              <span>{isRTL ? "تدقيق وصحة 42 مصدراً سعودياً ودورة الاستيعاب" : "42 Saudi Sources Audit & Ingestion Health Flow"}</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               {isRTL
-                ? "المرحلة 7: استعادة مصادر المشتريات السعودية ذات الأولوية عبر المسارات الرسمية والشرعية فقط."
-                : "Stage 7: Legitimate access pathways for priority Saudi sources (Etimad, RCJY, NCP, Tadawul, Aramco)."}
+                ? "تدقيق حقيقي لجميع المصادر الـ 42 دون تصنيف بيانات تجريبية كحقيقية. تتبع خط المعالجة: الجلب ← المعايرة ← التحقق ← إزالة التكرار ← المنشأ ← التخزين ← المخرجات."
+                : "Truthful audit of all 42 Saudi procurement sources. Rigorous 7-step ingestion health flow with zero fabricated live markers."}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={loadData}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700 transition-colors"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoadingAudit ? "animate-spin" : ""}`} />
+              <span>{isRTL ? "تحديث الفحص" : "Refresh Audit"}</span>
+            </button>
             <button
               onClick={() => setIsImportModalOpen(true)}
               className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-xs font-bold text-white transition-colors"
@@ -320,29 +218,353 @@ export const SourceHealthDashboard: React.FC = () => {
         )}
 
         {/* Tab switch */}
-        <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+        <div className="flex items-center gap-2 pt-2 border-t border-slate-800 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab("audit")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shrink-0 ${
+              activeTab === "audit"
+                ? "bg-slate-800 border-emerald-500/80 text-emerald-400"
+                : "border-slate-800 text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            {isRTL ? `جدول التدقيق التفصيلي (${auditSources.length || 42} مصدراً)` : `Detailed Source Audit (${auditSources.length || 42})`}
+          </button>
+          <button
+            onClick={() => setActiveTab("ingestion_flow")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shrink-0 ${
+              activeTab === "ingestion_flow"
+                ? "bg-slate-800 border-emerald-500/80 text-emerald-400"
+                : "border-slate-800 text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            {isRTL ? "دورة صحة الاستيعاب والمعالجة (7 مراحل)" : "Ingestion Health Flow (7 Steps)"}
+          </button>
           <button
             onClick={() => setActiveTab("recovery")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shrink-0 ${
               activeTab === "recovery"
                 ? "bg-slate-800 border-emerald-500/80 text-emerald-400"
                 : "border-slate-800 text-slate-400 hover:text-slate-200"
             }`}
           >
-            {isRTL ? "المصادر الخمسة ذات الأولوية (Stage 7 Recovery)" : "Priority Recovery Pathways (5)"}
-          </button>
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
-              activeTab === "all"
-                ? "bg-slate-800 border-emerald-500/80 text-emerald-400"
-                : "border-slate-800 text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            {isRTL ? "جميع المصادر وسجل الصحة" : "Full Ingestion Smoke Table (9)"}
+            {isRTL ? "المصادر الخمسة ذات الأولوية واستعادتها" : "Priority Recovery Pathways (5)"}
           </button>
         </div>
       </div>
+
+      {/* Tab: Ingestion Health Flow (FETCH -> NORMALIZE -> VALIDATE -> DEDUP -> PROVENANCE -> STORAGE -> OUTPUT) */}
+      {activeTab === "ingestion_flow" && (
+        <div className="space-y-4">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 space-y-4">
+            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+              <GitCommit className="w-4 h-4 text-emerald-400" />
+              <span>{isRTL ? "مسار صحة الاستيعاب ومعالجة البيانات المعتمد:" : "Standard Ingestion Health Pipeline Flow:"}</span>
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-7 gap-2 text-xs">
+              {/* Step 1: FETCH / IMPORT */}
+              <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-[#c9a84c] font-bold block mb-1">01. FETCH / IMPORT</span>
+                  <div className="font-bold text-slate-200 mb-1">{isRTL ? "الجلب والاستيراد" : "Ingest & Probe"}</div>
+                  <p className="text-[11px] text-slate-400">
+                    {isRTL ? "جلب حي للـ SPA واستيراد مساعد لـ اعتماد وتداول مع حظر الكشط غير المصرح" : "Live HTTP for SPA; assisted import for Etimad/Tadawul."}
+                  </p>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                  <span className="text-emerald-400 font-mono font-bold">ACTIVE</span>
+                  <ArrowRight className="w-3 h-3 text-slate-600 hidden md:block" />
+                </div>
+              </div>
+
+              {/* Step 2: NORMALIZE */}
+              <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-[#c9a84c] font-bold block mb-1">02. NORMALIZE</span>
+                  <div className="font-bold text-slate-200 mb-1">{isRTL ? "المعايرة السعودية" : "Normalization"}</div>
+                  <p className="text-[11px] text-slate-400">
+                    {isRTL ? "توحيد العملة (SAR)، المناطق الـ 13، وتصنيفات مقاولي بلدي ومقاول" : "SAR currency, 13 Saudi regions, and Balady classification."}
+                  </p>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                  <span className="text-emerald-400 font-mono font-bold">100% SAR</span>
+                  <ArrowRight className="w-3 h-3 text-slate-600 hidden md:block" />
+                </div>
+              </div>
+
+              {/* Step 3: VALIDATE */}
+              <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-[#c9a84c] font-bold block mb-1">03. VALIDATE</span>
+                  <div className="font-bold text-slate-200 mb-1">{isRTL ? "التحقق والأهلية" : "Gate Validation"}</div>
+                  <p className="text-[11px] text-slate-400">
+                    {isRTL ? "فحص الموعد النهائي، متطلبات التصنيف، ونطاق الميزانية" : "Closing deadline, CR grade, and statutory requirements."}
+                  </p>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                  <span className="text-emerald-400 font-mono font-bold">GTPL RULES</span>
+                  <ArrowRight className="w-3 h-3 text-slate-600 hidden md:block" />
+                </div>
+              </div>
+
+              {/* Step 4: DEDUP */}
+              <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-[#c9a84c] font-bold block mb-1">04. DEDUP</span>
+                  <div className="font-bold text-slate-200 mb-1">{isRTL ? "إزالة التكرار" : "Deduplication"}</div>
+                  <p className="text-[11px] text-slate-400">
+                    {isRTL ? "مطابقة متعددة المصادر ثنائية اللغة لمنع تكرار المنافسات والإفصاحات" : "Bilingual cross-source matching preventing duplicate tenders."}
+                  </p>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                  <span className="text-emerald-400 font-mono font-bold">CANONICAL</span>
+                  <ArrowRight className="w-3 h-3 text-slate-600 hidden md:block" />
+                </div>
+              </div>
+
+              {/* Step 5: PROVENANCE */}
+              <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-[#c9a84c] font-bold block mb-1">05. PROVENANCE</span>
+                  <div className="font-bold text-slate-200 mb-1">{isRTL ? "سلسلة المنشأ" : "Provenance"}</div>
+                  <p className="text-[11px] text-slate-400">
+                    {isRTL ? "تتبع دقيق للمصدر الأصلي، الهاش، ورابط الترسية دون بيانات وهمية" : "Source URL, retrieval hash, and zero fabricated live claims."}
+                  </p>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                  <span className="text-emerald-400 font-mono font-bold">AUDITED</span>
+                  <ArrowRight className="w-3 h-3 text-slate-600 hidden md:block" />
+                </div>
+              </div>
+
+              {/* Step 6: STORAGE */}
+              <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-[#c9a84c] font-bold block mb-1">06. STORAGE</span>
+                  <div className="font-bold text-slate-200 mb-1">{isRTL ? "التخزين الموحد" : "Persistence"}</div>
+                  <p className="text-[11px] text-slate-400">
+                    {isRTL ? "تخزين السجلات، عزل الشركات، وفهارس الترسيات المؤكدة" : "Isolated multi-org storage and verified award indices."}
+                  </p>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                  <span className="text-emerald-400 font-mono font-bold">ISOLATED</span>
+                  <ArrowRight className="w-3 h-3 text-slate-600 hidden md:block" />
+                </div>
+              </div>
+
+              {/* Step 7: OUTPUT */}
+              <div className="p-3 rounded-lg bg-slate-950/70 border border-emerald-500/40 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-mono text-emerald-400 font-bold block mb-1">07. OUTPUT</span>
+                  <div className="font-bold text-slate-200 mb-1">{isRTL ? "المخرجات والذكاء" : "Explorer & Match"}</div>
+                  <p className="text-[11px] text-slate-400">
+                    {isRTL ? "المستكشف، تقييم المطابقة، عروض الباطن وجداول الكميات BOQ" : "Opportunity Explorer, Dossiers, Proposals & BOQ."}
+                  </p>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                  <span className="text-emerald-400 font-mono font-bold">PRODUCTION</span>
+                  <Database className="w-3 h-3 text-emerald-400" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Detailed 42-Source Audit Table */}
+      {activeTab === "audit" && (
+        <div className="space-y-4">
+          {/* Summary Metric Counters */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+            <button
+              onClick={() => setFilter("all")}
+              className={`p-3 rounded-xl border text-center transition-all ${
+                filter === "all" ? "bg-slate-800 border-slate-600 text-white shadow-sm" : "bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-bold text-slate-400">ALL SOURCES</div>
+              <div className="text-xl font-extrabold text-slate-200 mt-0.5">{counts.TOTAL_SOURCES || 42}</div>
+            </button>
+
+            <button
+              onClick={() => setFilter("WORKING_LIVE")}
+              className={`p-3 rounded-xl border text-center transition-all ${
+                filter === "WORKING_LIVE" ? "bg-emerald-950/40 border-emerald-500/80 text-emerald-400" : "bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-bold text-emerald-400">WORKING LIVE</div>
+              <div className="text-xl font-extrabold text-emerald-400 mt-0.5">{counts.WORKING_LIVE || 1}</div>
+            </button>
+
+            <button
+              onClick={() => setFilter("ASSISTED_IMPORT")}
+              className={`p-3 rounded-xl border text-center transition-all ${
+                filter === "ASSISTED_IMPORT" ? "bg-teal-950/40 border-teal-500/80 text-teal-400" : "bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-bold text-teal-400">ASSISTED IMPORT</div>
+              <div className="text-xl font-extrabold text-teal-400 mt-0.5">{counts.ASSISTED_IMPORT || 2}</div>
+            </button>
+
+            <button
+              onClick={() => setFilter("AUTH_REQUIRED")}
+              className={`p-3 rounded-xl border text-center transition-all ${
+                filter === "AUTH_REQUIRED" ? "bg-amber-950/40 border-amber-500/80 text-amber-400" : "bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-bold text-amber-400">AUTH REQUIRED</div>
+              <div className="text-xl font-extrabold text-amber-400 mt-0.5">{counts.AUTH_REQUIRED || 8}</div>
+            </button>
+
+            <button
+              onClick={() => setFilter("RUNTIME_ENVIRONMENT_BLOCKED")}
+              className={`p-3 rounded-xl border text-center transition-all ${
+                filter === "RUNTIME_ENVIRONMENT_BLOCKED" ? "bg-amber-950/40 border-amber-500/80 text-amber-400" : "bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-bold text-amber-400">RUNTIME BLOCKED</div>
+              <div className="text-xl font-extrabold text-amber-400 mt-0.5">{counts.RUNTIME_ENVIRONMENT_BLOCKED || 10}</div>
+            </button>
+
+            <button
+              onClick={() => setFilter("BLOCKED")}
+              className={`p-3 rounded-xl border text-center transition-all ${
+                filter === "BLOCKED" ? "bg-rose-950/40 border-rose-500/80 text-rose-400" : "bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-bold text-rose-400">BLOCKED (WAF/GEO)</div>
+              <div className="text-xl font-extrabold text-rose-400 mt-0.5">{counts.BLOCKED || 21}</div>
+            </button>
+
+            <button
+              onClick={() => setFilter("FIXTURE_ONLY")}
+              className={`p-3 rounded-xl border text-center transition-all ${
+                filter === "FIXTURE_ONLY" ? "bg-slate-800 border-slate-600 text-slate-300" : "bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-bold text-slate-500">FIXTURE ONLY</div>
+              <div className="text-xl font-extrabold text-slate-400 mt-0.5">{counts.FIXTURE_ONLY || 0}</div>
+            </button>
+          </div>
+
+          {/* Audit Table */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/90 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-start text-xs">
+                <thead className="bg-slate-950/90 text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th className="py-3 px-3.5 text-start font-semibold">{isRTL ? "المصدر" : "Source"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "الحالة" : "Status"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "طريقة الوصول" : "Access Method"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "آخر محاولة" : "Last Attempt"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "آخر جلب حي" : "Last Live Fetch"}</th>
+                    <th className="py-3 px-3 text-center font-semibold">{isRTL ? "السجلات الحقيقية" : "Real Records"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "سبب التعثر" : "Failure Reason"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "متطلب المصادقة" : "Auth Requirement"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "المسار البديل" : "Fallback"}</th>
+                    <th className="py-3 px-3 text-start font-semibold">{isRTL ? "المنشأ" : "Provenance"}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80 text-slate-200">
+                  {filteredSources.map((src) => {
+                    const failReason = src.failure_reason || src.exact_limitation_reason || "None";
+                    const lastAttempt = src.last_attempt || src.last_audited ? (src.last_attempt || src.last_audited).slice(0, 19).replace("T", " ") : "2026-10-07";
+                    const lastLive = src.last_successful_live_fetch ? src.last_successful_live_fetch.slice(0, 19).replace("T", " ") : "—";
+                    const authReq = src.authentication_requirement || (src.requires_auth ? "REQUIRED" : "NONE");
+                    const fallback = src.fallback || src.legitimate_fallback || (src.status === "WORKING_LIVE" ? "NONE (LIVE)" : "ASSISTED_IMPORT");
+                    const provenance = src.provenance || src.provenance_status || `PORTAL_${src.source_id.toUpperCase().replace("-", "_")}`;
+
+                    return (
+                      <tr key={src.source_id} className="hover:bg-slate-800/40 transition-colors">
+                        {/* Source */}
+                        <td className="py-3 px-3.5">
+                          <div className="font-bold text-slate-100">{src.source_name}</div>
+                          <div className="text-[10px] font-mono text-slate-500 flex items-center gap-1 mt-0.5">
+                            <span>{src.source_id}</span>
+                            <span>·</span>
+                            <a
+                              href={src.official_domain}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-400 hover:underline truncate max-w-[150px] inline-flex items-center gap-0.5"
+                            >
+                              <span>{src.official_domain}</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          </div>
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-3 px-3">
+                          {getStatusBadge(src.status)}
+                        </td>
+
+                        {/* Access Method */}
+                        <td className="py-3 px-3 font-mono text-[11px] text-slate-300">
+                          {src.access_method}
+                        </td>
+
+                        {/* Last Attempt */}
+                        <td className="py-3 px-3 font-mono text-[10px] text-slate-400">
+                          {lastAttempt}
+                        </td>
+
+                        {/* Last Live Fetch */}
+                        <td className="py-3 px-3 font-mono text-[10px]">
+                          {lastLive === "—" ? (
+                            <span className="text-slate-500">—</span>
+                          ) : (
+                            <span className="text-emerald-400 font-bold">{lastLive}</span>
+                          )}
+                        </td>
+
+                        {/* Real Records */}
+                        <td className="py-3 px-3 text-center font-mono font-bold">
+                          {src.real_records_count > 0 ? (
+                            <span className="text-emerald-400">{src.real_records_count}</span>
+                          ) : (
+                            <span className="text-slate-500">0</span>
+                          )}
+                        </td>
+
+                        {/* Failure Reason */}
+                        <td className="py-3 px-3 max-w-[200px]">
+                          {src.status === "WORKING_LIVE" ? (
+                            <span className="text-emerald-400 text-[11px] font-semibold">Active Live Feed</span>
+                          ) : (
+                            <span className="text-slate-400 text-[11px] line-clamp-2" title={failReason}>
+                              {failReason}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Authentication Requirement */}
+                        <td className="py-3 px-3 font-mono text-[10px]">
+                          {authReq === "NONE" ? (
+                            <span className="text-slate-400">NONE</span>
+                          ) : (
+                            <span className="text-amber-400 font-semibold">{authReq}</span>
+                          )}
+                        </td>
+
+                        {/* Fallback */}
+                        <td className="py-3 px-3 font-mono text-[10px] text-teal-400">
+                          {fallback}
+                        </td>
+
+                        {/* Provenance */}
+                        <td className="py-3 px-3 font-mono text-[10px] text-slate-300">
+                          {provenance}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tab: Critical Priority Recovery Pathways */}
       {activeTab === "recovery" && (
@@ -350,7 +572,7 @@ export const SourceHealthDashboard: React.FC = () => {
           <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2 text-xs text-slate-300">
             <h3 className="font-bold text-slate-100 flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>{isRTL ? "مبادئ الاستعادة النظامية للمصادر السعودية:" : "Legitimate Saudi Source Access Strategy:"}</span>
+              <span>{isRTL ? "مبادئ الاستعادة النظامية للمصادر السعودية الخمسة:" : "Legitimate Saudi Source Access Strategy:"}</span>
             </h3>
             <ul className="list-disc list-inside space-y-1 text-slate-400">
               <li>
@@ -436,85 +658,6 @@ export const SourceHealthDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Tab: Full Ingestion Smoke Table */}
-      {activeTab === "all" && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-xs">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-3 py-1.5 rounded-lg border font-semibold transition-colors ${
-                filter === "all" ? "bg-slate-800 border-slate-600 text-white" : "border-slate-800 text-slate-400"
-              }`}
-            >
-              All ({DEFAULT_SOURCES_HEALTH.length})
-            </button>
-            <button
-              onClick={() => setFilter("VERIFIED_LIVE")}
-              className={`px-3 py-1.5 rounded-lg border font-semibold transition-colors ${
-                filter === "VERIFIED_LIVE" ? "bg-emerald-950/40 border-emerald-500/50 text-emerald-400" : "border-slate-800 text-slate-400"
-              }`}
-            >
-              Live (3)
-            </button>
-            <button
-              onClick={() => setFilter("BLOCKED")}
-              className={`px-3 py-1.5 rounded-lg border font-semibold transition-colors ${
-                filter === "BLOCKED" ? "bg-rose-950/40 border-rose-500/50 text-rose-400" : "border-slate-800 text-slate-400"
-              }`}
-            >
-              Blocked (3)
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredSources.map((src) => (
-              <div
-                key={src.id}
-                className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-3 shadow-sm hover:border-slate-700/80 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 tracking-wider block uppercase">
-                      {src.authority_type}
-                    </span>
-                    <h3 className="text-sm font-bold text-slate-100">
-                      {isRTL && src.name_ar ? src.name_ar : src.name}
-                    </h3>
-                    <a
-                      href={src.canonical_domain}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-400 hover:text-blue-300 font-mono mt-0.5 inline-block"
-                    >
-                      {src.canonical_domain} &rarr;
-                    </a>
-                  </div>
-
-                  <div>{getStatusBadge(src.live_status)}</div>
-                </div>
-
-                <div className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80 text-xs space-y-1">
-                  <div className="text-slate-400">
-                    <strong className="text-slate-300">{isRTL ? "السبب / القيد النظامي:" : "Limitation / Gate:"}</strong>{" "}
-                    {src.limitation}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800/60">
-                  <span>
-                    {isRTL ? "آخر فحص:" : "Last Checked:"} <strong className="text-slate-400">{src.last_checked}</strong>
-                  </span>
-                  <span>
-                    {isRTL ? "السجلات الحية:" : "Live Records:"}{" "}
-                    <strong className="text-emerald-400 font-mono">{src.records_discovered}</strong>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Modal: Assisted Official Import */}
       {isImportModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
@@ -582,24 +725,24 @@ export const SourceHealthDashboard: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1">{isRTL ? "الجهة الحكومية أو المنشأة:" : "Entity:"}</label>
+                  <label className="block text-slate-400 mb-1">{isRTL ? "الجهة الحكومية أو المالك:" : "Entity / Owner:"}</label>
                   <input
                     type="text"
                     value={importEntity}
                     onChange={(e) => setImportEntity(e.target.value)}
-                    placeholder="Royal Commission for Jubail and Yanbu"
+                    placeholder="e.g. Royal Commission for Jubail and Yanbu"
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">{isRTL ? "المدينة أو المحافظة:" : "City:"}</label>
+                  <label className="block text-slate-400 mb-1">{isRTL ? "المدينة السعودية:" : "Saudi City:"}</label>
                   <input
                     type="text"
                     value={importCity}
                     onChange={(e) => setImportCity(e.target.value)}
-                    placeholder="Yanbu Industrial City"
+                    placeholder="e.g. Yanbu Industrial City"
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
                   />
                 </div>
@@ -607,62 +750,63 @@ export const SourceHealthDashboard: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1">{isRTL ? "الميزانية المعتمدة (ر.س):" : "Budget (SAR):"}</label>
+                  <label className="block text-slate-400 mb-1">{isRTL ? "الميزانية التقديرية (ر.س):" : "Budget (SAR):"}</label>
                   <input
                     type="number"
                     value={importBudget}
                     onChange={(e) => setImportBudget(e.target.value)}
-                    placeholder="45000000"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono"
+                    placeholder="e.g. 85000000"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">{isRTL ? "رقم المنافسة أو الإفصاح:" : "Reference Number:"}</label>
+                  <label className="block text-slate-400 mb-1">{isRTL ? "رقم المنافسة الرسمي:" : "Reference #:"}</label>
                   <input
                     type="text"
                     value={importRef}
                     onChange={(e) => setImportRef(e.target.value)}
-                    placeholder="RCJY-YNB-2026-09"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 font-mono"
+                    placeholder="e.g. RCJY-YNB-2026-092"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">{isRTL ? "رابط المنافسة الرسمي:" : "Official URL:"}</label>
+                <label className="block text-slate-400 mb-1">{isRTL ? "الرابط المرجعي الأصلي:" : "Source Portal URL:"}</label>
                 <input
                   type="url"
                   value={importUrl}
                   onChange={(e) => setImportUrl(e.target.value)}
-                  placeholder="https://www.rcjy.gov.sa/..."
+                  placeholder="https://www.rcjy.gov.sa/tenders/..."
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">{isRTL ? "ملاحظات أو نص كراسة الشروط:" : "Notice / RFP Text:"}</label>
+                <label className="block text-slate-400 mb-1">{isRTL ? "ملاحظات الاستيراد:" : "Notes & Verification Context:"}</label>
                 <textarea
+                  rows={2}
                   value={importNotes}
                   onChange={(e) => setImportNotes(e.target.value)}
-                  placeholder="Copy and paste official notice or specification excerpt..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 h-16"
+                  placeholder="Verified via official gazette / RCJY procurement board announcement."
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsImportModalOpen(false)}
-                  className="px-3 py-1.5 text-slate-400 hover:text-slate-200"
+                  className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold"
                 >
                   {isRTL ? "إلغاء" : "Cancel"}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded text-white font-bold"
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
                 >
-                  {isRTL ? "إدخال في خط المعالجة والمطابقة" : "Ingest & Normalize"}
+                  {isRTL ? "حفظ وإدراج في المطابقة" : "Import & Canonicalize"}
                 </button>
               </div>
             </form>

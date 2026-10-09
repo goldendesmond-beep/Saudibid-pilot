@@ -140,7 +140,7 @@ export function AnalyticsPage() {
           <h2 className="mb-4 text-sm font-bold text-[#e8eaed]">
             {locale === "ar" ? "توزيع أسعار العقود (بالريال السعودي)" : "Contract Value Distribution (SAR)"}
           </h2>
-          {isLoading ? <Skeleton className="h-48 w-full" /> : pricing ? <PricingChart stats={pricing} /> : null}
+          {isLoading ? <Skeleton className="h-48 w-full" /> : <PricingChart data={pricing} stats={pricing} />}
         </div>
 
         {/* Win rates */}
@@ -148,7 +148,7 @@ export function AnalyticsPage() {
           <h2 className="mb-4 text-sm font-bold text-[#e8eaed]">
             {locale === "ar" ? "المقاولون الأكثر فوزاً بالعقود" : "Top Winning Contractors (Win Share)"}
           </h2>
-          {isLoading ? <Skeleton className="h-48 w-full" /> : <WinRatesChart rates={winRates} />}
+          {isLoading ? <Skeleton className="h-48 w-full" /> : <WinRatesChart data={winRates} rates={winRates} />}
         </div>
 
         {/* Trends — full width */}
@@ -156,7 +156,7 @@ export function AnalyticsPage() {
           <h2 className="mb-4 text-sm font-bold text-[#e8eaed]">
             {locale === "ar" ? `حجم الإنفاق والترسيات الزمني (${interval})` : `Procurement Volume Timeline (${interval})`}
           </h2>
-          {isLoading ? <Skeleton className="h-48 w-full" /> : <TrendsChart series={trends} />}
+          {isLoading ? <Skeleton className="h-48 w-full" /> : <TrendsChart data={trends} series={trends} />}
         </div>
       </div>
     </div>

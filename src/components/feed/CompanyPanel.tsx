@@ -24,28 +24,57 @@ export function CompanyPanel() {
 
   // Form state
   const [form, setForm] = useState({
-    name: profile?.name ?? "Al-Fanar Infrastructure & Contracting Co.",
-    name_ar: profile?.name_ar ?? "شركة الفنار للمقاولات والبنية التحتية",
-    cr_number: profile?.cr_number ?? "1010234567",
+    name: profile?.name ?? "",
+    name_ar: profile?.name_ar ?? "",
+    cr_number: profile?.cr_number ?? "",
     company_size: (profile?.company_size ?? "Medium") as CompanySize,
     contractor_classification: profile?.contractor_classification ?? "Roads & Buildings",
     classification_grade: (profile?.classification_grade ?? 2) as ClassificationGrade,
-    saudi_regions: profile?.saudi_regions ?? ["Riyadh Region", "Eastern Province"],
-    saudi_cities: profile?.saudi_cities?.join(", ") ?? "Riyadh, Dammam, Khobar",
+    saudi_regions: profile?.saudi_regions ?? ["Riyadh Region"],
+    saudi_cities: profile?.saudi_cities?.join(", ") ?? "Riyadh",
     main_activities: profile?.main_activities ?? ["Roads, Bridges & Civil Infrastructure"],
-    secondary_activities: profile?.secondary_activities ?? ["Electromechanical (MEP) Works"],
-    experience_years: profile?.experience_years?.toString() ?? "14",
-    manpower_count: profile?.manpower_count?.toString() ?? "180",
-    equipment_tags: profile?.equipment_tags ?? ["Heavy Excavators", "Asphalt Pavers & Rollers", "Mobile & Tower Cranes"],
-    comfortable_project_size: profile?.comfortable_project_size ?? "20M - 100M SAR",
-    preferred_project_value_sar: profile?.preferred_project_value_sar?.toString() ?? "45000000",
-    guarantee_capability_sar: profile?.guarantee_capability_sar?.toString() ?? "25000000",
-    certifications: profile?.certifications ?? ["SCA_MUQAWIL", "ISO_9001", "ZATCA_CLEARANCE"],
+    secondary_activities: profile?.secondary_activities ?? [],
+    experience_years: profile?.experience_years?.toString() ?? "10",
+    manpower_count: profile?.manpower_count?.toString() ?? "100",
+    equipment_tags: profile?.equipment_tags ?? [],
+    comfortable_project_size: profile?.comfortable_project_size ?? "10M - 50M SAR",
+    preferred_project_value_sar: profile?.preferred_project_value_sar?.toString() ?? "30000000",
+    guarantee_capability_sar: profile?.guarantee_capability_sar?.toString() ?? "15000000",
+    certifications: profile?.certifications ?? ["SCA_MUQAWIL", "ISO_9001"],
     direct_tender_interest: profile?.direct_tender_interest ?? true,
     subcontracting_interest: profile?.subcontracting_interest ?? true,
     vendor_registration_interest: profile?.vendor_registration_interest ?? true,
-    excluded_project_types: profile?.excluded_project_types?.join(", ") ?? "Residential villas",
+    excluded_project_types: profile?.excluded_project_types?.join(", ") ?? "",
   });
+
+  // Re-sync form state when active organization profile changes
+  useEffect(() => {
+    if (profile) {
+      setForm({
+        name: profile.name,
+        name_ar: profile.name_ar || "",
+        cr_number: profile.cr_number || "",
+        company_size: (profile.company_size || "Medium") as CompanySize,
+        contractor_classification: profile.contractor_classification || "General Contracting",
+        classification_grade: (profile.classification_grade || 2) as ClassificationGrade,
+        saudi_regions: profile.saudi_regions || ["Riyadh Region"],
+        saudi_cities: profile.saudi_cities?.join(", ") || "Riyadh",
+        main_activities: profile.main_activities || [],
+        secondary_activities: profile.secondary_activities || [],
+        experience_years: profile.experience_years?.toString() || "10",
+        manpower_count: profile.manpower_count?.toString() || "100",
+        equipment_tags: profile.equipment_tags || [],
+        comfortable_project_size: profile.comfortable_project_size || "10M - 50M SAR",
+        preferred_project_value_sar: profile.preferred_project_value_sar?.toString() || "30000000",
+        guarantee_capability_sar: profile.guarantee_capability_sar?.toString() || "15000000",
+        certifications: profile.certifications || ["SCA_MUQAWIL"],
+        direct_tender_interest: profile.direct_tender_interest ?? true,
+        subcontracting_interest: profile.subcontracting_interest ?? true,
+        vendor_registration_interest: profile.vendor_registration_interest ?? true,
+        excluded_project_types: profile.excluded_project_types?.join(", ") || "",
+      });
+    }
+  }, [profile]);
 
   const [expandedDetails, setExpandedDetails] = useState(false);
 

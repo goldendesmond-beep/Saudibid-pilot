@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../i18n/useTranslation";
+import { useCompanyStore } from "../../store/companyStore";
 import {
   actionCenterApi,
   type ActionCenterItemModel,
@@ -17,6 +18,7 @@ import {
 
 export function ActionCenterView() {
   const { isAr } = useTranslation();
+  const { profile } = useCompanyStore();
 
   const [actions, setActions] = useState<ActionCenterItemModel[]>([]);
   const [summary, setSummary] = useState<ActionCenterSummary | null>(null);
@@ -41,7 +43,7 @@ export function ActionCenterView() {
 
   useEffect(() => {
     loadActions();
-  }, [loadActions]);
+  }, [loadActions, profile?.id]);
 
   const getPriorityStyle = (priority: string) => {
     switch (priority) {

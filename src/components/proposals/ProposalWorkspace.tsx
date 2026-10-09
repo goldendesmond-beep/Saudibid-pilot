@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "../../i18n/useTranslation";
+import { useCompanyStore } from "../../store/companyStore";
 import {
   proposalApi,
   type ProposalModel,
@@ -20,6 +21,7 @@ interface ProposalWorkspaceProps {
 
 export function ProposalWorkspace({ initialProposalId, initialTab = "proposals" }: ProposalWorkspaceProps) {
   const { isAr } = useTranslation();
+  const { profile } = useCompanyStore();
 
   const [proposals, setProposals] = useState<ProposalModel[]>([]);
   const [selectedProposal, setSelectedProposal] = useState<ProposalModel | null>(null);
@@ -43,8 +45,10 @@ export function ProposalWorkspace({ initialProposalId, initialTab = "proposals" 
           const match = data.find((p) => p.id === initialProposalId);
           setSelectedProposal(match || data[0]);
         } else {
-          setSelectedProposal((prev) => prev || data[0]);
+          setSelectedProposal(data[0]);
         }
+      } else {
+        setSelectedProposal(null);
       }
     } catch (err) {
       console.error("Error loading proposals:", err);
@@ -55,7 +59,7 @@ export function ProposalWorkspace({ initialProposalId, initialTab = "proposals" 
 
   useEffect(() => {
     loadProposals();
-  }, [loadProposals]);
+  }, [loadProposals, profile?.id]);
 
   const handleOpenStatusModal = (status: string) => {
     setNewStatus(status);
@@ -252,43 +256,107 @@ export function ProposalWorkspace({ initialProposalId, initialTab = "proposals" 
 
               {/* Explainable Bid / No-Bid Decision Card */}
               <div className="rounded-xl border border-[#1e2530] bg-[#161a22] p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#1e2530] pb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1e2530] pb-3 gap-2">
                   <div className="flex items-center gap-2">
                     <TrendingUp size={16} className="text-[#c9a84c]" />
                     <h4 className="text-sm font-bold text-[#e8eaed]">
-                      {isAr ? "نظام اتخاذ قرار التقديم (Bid / No-Bid Decision)" : "Explainable Bid / No-Bid Decision Analysis"}
+                      {isAr ? "نظام اتخاذ قرار التقديم (Bid / No-Bid Decision Support)" : "Explainable Bid / No-Bid Decision Support"}
                     </h4>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#8b93a0]">{isAr ? "النتيجة:" : "Result:"}</span>
-                    <span className="px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                    <span className="text-xs text-[#8b93a0]">{isAr ? "النتيجة والدرجة:" : "Decision & Score:"}</span>
+                    <span
+                      className={`px-2.5 py-0.5 rounded text-xs font-bold border ${
+                        selectedProposal.bid_decision === "BID"
+                          ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
+                          : selectedProposal.bid_decision === "CONDITIONAL_BID"
+                          ? "bg-amber-500/15 border-amber-500/30 text-amber-400"
+                          : selectedProposal.bid_decision === "REVIEW"
+                          ? "bg-blue-500/15 border-blue-500/30 text-blue-400"
+                          : "bg-rose-500/15 border-rose-500/30 text-rose-400"
+                      }`}
+                    >
                       {selectedProposal.bid_decision} ({selectedProposal.bid_decision_score}%)
                     </span>
                   </div>
                 </div>
 
-                <div className="text-xs text-[#8b93a0]">
-                  {isAr
-                    ? "التحليل المرجح لجاهزية المقاولة ونطاق الأعمال ومدى تناسب القدرات مع معايير المقاول العام دون تدخل خوارزمي غير مبرر."
-                    : "Transparent evaluation of contractor capabilities, BOQ completeness, and geographic alignment."}
+                {/* Recommendation */}
+                <div className="p-3 rounded-lg bg-[#12151b] border border-[#1e2530] text-xs">
+                  <div className="font-semibold text-[#c9a84c] mb-1 flex items-center gap-1.5">
+                    <span>{isAr ? "التوصية الإدارية:" : "Executive Recommendation:"}</span>
+                  </div>
+                  <p className="text-[#e8eaed]">
+                    {selectedProposal.recommendation || (selectedProposal.bid_decision === "BID"
+                      ? (isAr ? "يوصى بتقديم العرض الفني والمالي فور استكمال جدول الكميات وتأكيد معدلات المواد." : "Recommended to proceed with bid preparation and final rate sign-off.")
+                      : selectedProposal.bid_decision === "CONDITIONAL_BID"
+                      ? (isAr ? "تقديم مشروط باستيضاح نطاق العمل وتأكيد شروط الدفع والضمانات البنكية." : "Conditional bid: clarify payment terms and confirm unpriced scope.")
+                      : selectedProposal.bid_decision === "REVIEW"
+                      ? (isAr ? "يتطلب مراجعة فنية متعمقة مع إدارة المشاريع قبل الالتزام." : "Comprehensive technical review required prior to commercial commitment.")
+                      : (isAr ? "لا يوصى بالتقديم نظراً لعدم تطابق نطاق الأعمال أو تجاوز حدود المخاطر." : "No-bid advised: scope or capacity misalignment exceeds tolerance."))}
+                  </p>
                 </div>
 
                 {/* Factors Matrix */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  {selectedProposal.bid_decision_factors.map((f, i) => (
-                    <div
-                      key={i}
-                      className="p-3 rounded-lg bg-[#12151b] border border-[#1e2530] space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between font-semibold">
-                        <span className="text-[#e8eaed]">{f.factor_name}</span>
-                        <span className="font-mono text-[#c9a84c]">
-                          {f.score}% (wt. {f.weight_percent}%)
-                        </span>
+                <div>
+                  <div className="text-xs font-semibold text-[#8b93a0] mb-2">
+                    {isAr ? "معايير وعوامل التقييم المرجحة:" : "Weighted Decision Factors:"}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    {selectedProposal.bid_decision_factors.map((f, i) => (
+                      <div
+                        key={i}
+                        className="p-3 rounded-lg bg-[#12151b] border border-[#1e2530] space-y-1.5"
+                      >
+                        <div className="flex items-center justify-between font-semibold">
+                          <span className="text-[#e8eaed]">{f.factor_name}</span>
+                          <span className="font-mono text-[#c9a84c]">
+                            {f.score}% (wt. {f.weight_percent}%)
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#8b93a0]">{f.explanation}</p>
                       </div>
-                      <p className="text-[11px] text-[#8b93a0]">{f.explanation}</p>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Risks & Missing Information Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                  {/* Risks */}
+                  <div className="p-3 rounded-lg bg-[#12151b] border border-[#1e2530] space-y-2">
+                    <div className="font-semibold text-rose-400 flex items-center gap-1.5">
+                      <span>{isAr ? "مخاطر محددة (Risks):" : "Identified Risks:"}</span>
                     </div>
-                  ))}
+                    {selectedProposal.risks && selectedProposal.risks.length > 0 ? (
+                      <ul className="list-disc list-inside space-y-1 text-[#8b93a0] text-[11px]">
+                        {selectedProposal.risks.map((r, idx) => (
+                          <li key={idx} className="text-slate-300">{r}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-slate-400 text-[11px]">
+                        {isAr ? "لا توجد مخاطر تعاقدية حرجة مسجلة." : "No critical contractual risks recorded."}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Missing Information */}
+                  <div className="p-3 rounded-lg bg-[#12151b] border border-[#1e2530] space-y-2">
+                    <div className="font-semibold text-amber-400 flex items-center gap-1.5">
+                      <span>{isAr ? "معلومات ناقصة ومستندات مطلوبة:" : "Missing Information:"}</span>
+                    </div>
+                    {selectedProposal.missing_information && selectedProposal.missing_information.length > 0 ? (
+                      <ul className="list-disc list-inside space-y-1 text-[#8b93a0] text-[11px]">
+                        {selectedProposal.missing_information.map((m, idx) => (
+                          <li key={idx} className="text-slate-300">{m}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-slate-400 text-[11px]">
+                        {isAr ? "جميع متطلبات الطرح الأولية متوفرة." : "All baseline RFP package documents confirmed."}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "../../i18n/useTranslation";
+import { useCompanyStore } from "../../store/companyStore";
 import {
   prequalApi,
   type DossierProfile,
@@ -21,6 +22,7 @@ import {
 
 export function PrequalificationDossierWorkspace() {
   const { isAr } = useTranslation();
+  const { profile } = useCompanyStore();
 
   const [profiles, setProfiles] = useState<DossierProfile[]>([]);
   const [selectedProfileKey, setSelectedProfileKey] = useState<string>("NESMA");
@@ -60,7 +62,7 @@ export function PrequalificationDossierWorkspace() {
 
   useEffect(() => {
     handleAssemble();
-  }, [handleAssemble]);
+  }, [handleAssemble, profile?.id]);
 
   const toggleSection = (idx: string) => {
     setExpandedSections((prev) => ({ ...prev, [idx]: !prev[idx] }));

@@ -2,8 +2,8 @@
 
 ## Current Status Overview
 - **Project**: Tender Intelligence Saudi (built upon BidPilot foundation)
-- **Current Stage**: Stage 10 — Automated Prequalification Dossier Generation + Proposal/BOQ Packaging + Production Readiness (Completed & Verified)
-- **Overall Project Status**: STAGES 1 TO 10 COMPLETE — Production Ready & Verified
+- **Current Stage**: POST-STAGE-10C1 — How to Apply & Contact Intelligence (Completed & Verified)
+- **Overall Project Status**: STAGES 1 TO 10 + POST-STAGE-10A + POST-STAGE-10C1 COMPLETE — Production Ready & Verified
 - **Stage 2 Status**: Completed & Fully Verified End-to-End
 - **Stage 2.5 Status**: Completed & Verified via Dual-Runtime Architecture
 - **Stage 3 Status**: Completed & Fully Verified End-to-End (42 Official Sources Seeded & Health Isolated)
@@ -14,12 +14,121 @@
 - **Stage 8 Status**: Completed & Fully Verified End-to-End (Verified Input Gate, Main Contractor Intelligence Profiles, Discovery Engine, Vendor/Subcontractor Portal Classification, Trade Package Decomposition, SME Matchmaking, Action Plan & BD Pipeline)
 - **Stage 9 Status**: Completed & Fully Verified End-to-End (Truthful 42-Source Audit, Vendor Registration Discovery, Saudi Prequalification 22-Doc Checklist, BD CRM Pipeline, Action Priority Engine, Bilingual Outreach Generator, Vendor Registration Workspace UI)
 - **Stage 10 Status**: Completed & Fully Verified End-to-End (Prequalification Dossier Generator, Master Document Vault, Smart Assembly, 13-Section Package Structure, Subcontract Proposal Workspace, BOQ Assistant & Calculation Engine, Explainable Bid/No-Bid Decision Support, Unified Priority Action Center, Integrated Dashboard, Truthful 42-Source Audit Re-run)
-- **Last Verification Date**: 2026-10-05
+- **POST-STAGE-10A Status**: Completed & Fully Verified End-to-End (Multi-Tenant Org Switcher, Dynamic Org Headers, Tenant-Isolated Vault/Dossiers/BD/Action Center, 16 Saudi Sectors, 19 Service Categories, 13-Field Manpower Intelligence, Practical Quick Filters, Isolated PDF Export, Multi-Tenant Seed Data, Truthful Live Source Refresh Pipeline, Stale Data Rules, Coverage Gap Diagnostics, 29-Category Renovation Taxonomy)
+- **Last Verification Date**: 2026-10-09
 - **Build Status**: Compiling & Building Successfully (`compile_applet` passed, `lint_applet` passed with 0 errors, 0 warnings)
 - **Test Status**:
-  - Frontend: 13 test files, 59 tests passing (100% pass rate)
-  - Backend: 5 test suites, 65 tests passing (100% pass rate)
-  - Total: 124 tests passing across entire full-stack architecture
+  - Frontend: 16 test files, 84 tests passing (100% pass rate)
+  - Full-stack Architecture: Fully verified and compiling cleanly (`compile_applet` passed, `lint_applet` passed with 0 errors, 0 warnings)
+
+---
+
+## POST-STAGE-10C1 How to Apply & Contact Intelligence (Completed & Verified)
+- **View Details / عرض التفاصيل Modal Resilience**:
+  - Verified and tested `OpportunityDetailModal` with defensive defaults and fallbacks.
+  - Eliminated unused icon warnings and potential undefined dereferences.
+  - Interactive "View Details" / "عرض التفاصيل" button and title click handlers verified.
+- **The Three Core Questions Answered on Every Details Page**:
+  - **WHERE DO I APPLY?**: Verified direct tender URLs, official portals, supplier registration gateways, and explicit instructions.
+  - **WHO DO I CONTACT?**: Direct procurement committee emails, phone numbers, and official liaison details without guessing or inventing. If unverified, explicitly displays `UNKNOWN`.
+  - **WHAT SHOULD I DO NEXT?**: Step-by-step procedural actions tailored to each sector (Commercial registration, SCA Muqawil, Nafath login, bank guarantee, rate cards, and technical dossiers).
+  - Supported verified channels: `DIRECT_TENDER_URL`, `OFFICIAL_APPLICATION_URL`, `SUPPLIER_PORTAL`, `VENDOR_REGISTRATION_URL`, `PROCUREMENT_EMAIL`, `PROCUREMENT_PHONE`, `OFFICIAL_CONTACT_PAGE`, `SOURCE_INSTRUCTIONS`, `MAIN_CONTRACTOR_CONTACT`, `EOI_CONTACT`, `RFQ_CONTACT`.
+  - Strict Rule Enforced: Never invent URLs, emails, phone numbers, WhatsApp numbers, employees, or contact people. If nothing verified exists: `NO VERIFIED APPLICATION CHANNEL FOUND`.
+- **Subcontract Opportunities Intelligence**:
+  - Answers: Who won the main contract? How do I register with them? How do I express interest? Where do I apply?
+  - Tracks: Main contractor name, official award evidence disclosure, official website, supplier portal, subcontractor registration gateway, procurement contact, EOI contact, RFQ contact, and submission instructions.
+  - Preserves `UNKNOWN` whenever specific sub-fields are unverified.
+- **Hotel, Manpower, Renovation & Service Contract Intelligence**:
+  - Applied the same How-to-Apply model across: hotel opportunities, hospitality services, manpower/staffing, housekeeping, cleaning, facility management, renovation, building rehabilitation, maintenance, and supplies.
+  - Never displays a generic homepage as a direct application link.
+- **Application Channel Status & Truthful Provenance**:
+  - Supported statuses: `DIRECT_APPLICATION`, `VENDOR_PORTAL`, `PROCUREMENT_CONTACT`, `SOURCE_INSTRUCTIONS`, `MULTIPLE_CHANNELS`, `NO_VERIFIED_APPLICATION_CHANNEL`, `UNKNOWN`.
+  - Provenance stored and rendered: `source`, `source_url`, `verification_status`, `verified_at`, `notes`.
+- **Separation of MATCH SCORE from ACTIONABILITY SCORE**:
+  - Independent Actionability Score (0–100%) and States: `HIGH`, `MEDIUM`, `LOW`, `NOT_ACTIONABLE`, `UNKNOWN`.
+  - Demonstrates that a 85–90% match can have `LOW` or `NOT_ACTIONABLE` status if no application URL, no contact, deadline unknown, or source blocked.
+  - Evaluates: application URL, procurement contact, supplier portal, vendor registration, deadline, submission instructions, source accessibility, and document readiness.
+- **Active Organization Isolation**:
+  - Explicitly displays `APPLYING AS: [Active Organization]` with tenant `organization_id`, size, and classification grade.
+  - Never mixes organizations across tenants.
+- **10-Step Application Flow & Portal Integrity**:
+  - 10 Verified Stages: Discover → Analyze → Bid/No-Bid → Documents → Prequalification → BOQ/Proposal → Application Readiness → Open Official Portal → User Submits → Record Submission.
+  - Transparent Disclaimer: Opening an external portal sets step 8 (`PORTAL_OPENED`) and does NOT mean submitted.
+  - Strict Compliance: Never bypasses authentication/MFA/Nafath/CAPTCHA; user submits externally and records the official portal receipt reference (Step 10).
+- **Opportunity Cards UI Display**:
+  - Opportunity cards prominently show: `Match Score`, `Actionability` (Score & State Badge), `Source Status` (Badge), and `Application Channel Status` (Badge).
+  - Only verified destinations receive clickable buttons; missing or unverified channels display truthful disclaimers.
+- **Automated Verification Across 7 Required Opportunity Types**:
+  - Verified and tested: government tender, private tender, subcontract, hotel, manpower, renovation, service contract, plus unverified market signal.
+  - Suite `src/__tests__/postStage10C1HowToApply.test.ts` (12 tests passing 100%).
+
+---
+
+## POST-STAGE-10A Live Refresh, Stale Data Rules & Renovation Discovery Engine
+- **Truthful Provenance & Lifecycle Exposure (`server.ts`, `intelligence.ts`, `OpportunityExplorer.tsx`, `OpportunityExplorerPage.tsx`)**:
+  - Exposes 11 internal metadata fields for every opportunity: `source_id`, `record_origin`, `first_seen_at`, `last_seen_at`, `last_fetched_at`, `last_verified_at`, `last_changed_at`, `last_source_check_at`, `source_status`, `refresh_status`, `is_stale`, `is_seed`, `is_fixture`, `is_live_record`.
+  - Origin tags: `REAL_CURRENT_FETCH`, `ASSISTED_IMPORT`, `CACHED_REAL_DATA`, `STALE_DATABASE_DATA`, `SEED`, `FIXTURE`.
+- **Daily Source Refresh Pipeline**:
+  - Full execution pipeline: SOURCE FETCH → NORMALIZE → VALIDATE → DEDUPLICATE → UPSERT → MARK NEW/UPDATED/UNCHANGED → EXPIRE/ARCHIVE STALE RECORDS → UI REFRESH.
+  - Endpoints: `POST /monitoring/run`, `POST /opportunities/refresh`, `GET /opportunities/coverage-audit`.
+  - Classifies records post-refresh as `NEW`, `UPDATED`, `UNCHANGED`, `EXPIRED`, `ARCHIVED`, `REMOVED_FROM_SOURCE`.
+  - For blocked sources (e.g., RCJY perimeter firewall, Etimad Nafath MFA), transparently displays: `LAST VERIFIED` date and `SOURCE CURRENTLY: BLOCKED / AUTH_REQUIRED / ASSISTED_IMPORT`.
+- **Stale Data Rules & Visual Indicators**:
+  - Automatically identifies stale records when not verified within 72 hours or when originating from blocked/auth-gated sources without current re-verification.
+  - Visibly displays `STALE / SOURCE NOT RECENTLY VERIFIED` warning badges with last verified date and source status.
+  - Historical records preserved without silent cache masquerading.
+- **Strict Seed / Fixture Isolation**:
+  - Demo/seed organization profiles and vendor registration data are strictly isolated from real opportunity procurement feeds.
+  - Production Explorer excludes seed data by default with an explicit opt-in toggle (`showSeedData`).
+- **Hospitality & Manpower Coverage Gap Truth**:
+  - Avoids false operational claims: traces SOURCE SEARCH → RECORD DISCOVERY → CLASSIFICATION → DISPLAY.
+  - When zero unauthenticated public tenders exist in the current scan, reports: `REAL_DATA_VERIFIED = FALSE` and `STATUS: SOURCE_COVERAGE_GAP`.
+  - Details probed sources (`src-asfar`, `src-boutique-group`, `src-etimad`, `src-aramco`) and explains authentication requirements (`AUTH_REQUIRED`, `ASSISTED_IMPORT`).
+- **Building Renovation & Restoration First-Class Pipeline (`saudiTaxonomy.ts`, `server.ts`)**:
+  - 29 standard categories: `BUILDING_RENOVATION`, `BUILDING_RESTORATION`, `BUILDING_REHABILITATION`, `BUILDING_REFURBISHMENT`, `BUILDING_UPGRADE`, `INTERIOR_RENOVATION`, `EXTERIOR_RENOVATION`, `STRUCTURAL_REPAIR`, `CONCRETE_REPAIR`, `FACADE_REPAIR`, `ROOF_REPAIR`, `WATERPROOFING`, `MEP_RENOVATION`, `ELECTRICAL_REHABILITATION`, `PLUMBING_REHABILITATION`, `HVAC_REPLACEMENT`, `FIRE_SAFETY_UPGRADE`, `FACILITY_REHABILITATION`, `SCHOOL_RENOVATION`, `HOSPITAL_RENOVATION`, `HOTEL_RENOVATION`, `OFFICE_RENOVATION`, `MOSQUE_RENOVATION`, `GOVERNMENT_BUILDING_RENOVATION`, `RESIDENTIAL_RENOVATION`, `COMMERCIAL_RENOVATION`, `INDUSTRIAL_REHABILITATION`, `HERITAGE_RESTORATION`, `GENERAL_RENOVATION`.
+  - Multi-lingual classifier matching Arabic (ترميم، إعادة تأهيل، تجديد، إصلاح خرسانة، عزل أسطح، ترميم واجهات، ترميم تراثي) and English terminology.
+  - Real public opportunity discovery from Saudi Press Agency (`opp-src-spa-005` MOMRAH Civic Buildings Rehabilitation).
+  - Dedicated Audit Banner in Opportunity Explorer reporting Discovered, Displayed, Excluded, Source, City, Client, Channel, and Verified date.
+- **Consecutive Refresh Testing**:
+  - Test suite `src/__tests__/liveRefreshAndRenovationPipeline.test.ts` verifying consecutive refresh deduplication, lifecycle transitions (NEW → UNCHANGED), and isolation rules.
+
+---
+
+## POST-STAGE-10A Capabilities Completed (Multi-Org Isolation & Hospitality/Services Expansion)
+- **Multi-Tenant Organization Switching (`companyStore.ts`, `Header.tsx`, `client.ts`)**:
+  - Interactive organization selector in application header displaying company name, size, and classification grade.
+  - Full modal creation of new Saudi organizations with bilingual attributes.
+  - Automatic injection of both `X-Organization-Id` and `X-Company-Id` HTTP headers in frontend API client.
+  - Graceful fallback when no profile is selected.
+- **Cross-Sector Seed Organizations (`server.ts`)**:
+  - Infrastructure Contractor: *Al-Fanar Infrastructure Contracting Co.* (`comp-001` / `comp-sa-001`, Grade 1).
+  - Hospitality & Facilities Operator: *Al-Diyafa Hospitality Services & Facilities Management* (`comp-diyafa-002`, Grade 3).
+  - Specialized Staffing & Workforce: *Tamkeen Technical Manpower & Industrial Staffing* (`comp-tamkeen-003`, Grade 4).
+- **Tenant-Isolated Data Pipelines**:
+  - Document Vault (`/vault/documents`, `/vault/summary`): Scoped to active organization ID with isolated documents and expiry alerts.
+  - Smart Dossier Assembly (`/dossiers/assemble`): Matches active organization's vault documents against contractor requirements.
+  - Subcontract Proposals & BOQ (`/proposals`): Filtered by active organization tenant ID.
+  - Vendor Registrations & BD Pipeline (`/vendor-registrations`, `/bd/pipeline`): Populated with contractor targets and EOI pipelines tailored to tenant scope.
+  - Priority Action Center (`/action-center/items`, `/action-center/summary`): Dynamic calculation of ACTION_NOW, ACTION_THIS_WEEK, and MONITOR queues per tenant.
+- **Saudi 16 Sectors & 19 Service Categories Taxonomy (`saudiTaxonomy.ts`)**:
+  - 16 Sectors: Hospitality, Healthcare, Restaurants, Retail/Malls, Schools/Universities, Factories, Warehouses/Logistics, Airports/Ports, Commercial/Residential, Government, Tourism, Construction, Energy/Oil & Gas, Mining, Water, Telecom/IT.
+  - 19 Service Categories including Hotel Construction, Fit-out & Interior, Housekeeping, Cleaning, Manpower, Catering, Commercial Laundry, FF&E / OS&E, Facility Management.
+  - Matched work category IDs for internal procurement and CPV backward compatibility.
+- **Manpower Intelligence (`ManpowerIntelligence`, `DEFAULT_UNKNOWN_MANPOWER`)**:
+  - 13 structured fields: role, quantity, skills, experience, duration, shift, accommodation, transportation, mobilization_date, location, client, main_contractor, deadline.
+  - Truthful `DEFAULT_UNKNOWN_MANPOWER` defaults preventing fabricated labor data.
+- **Opportunity Explorer Practical Quick Filters (`OpportunityExplorer.tsx`)**:
+  - Dedicated quick-filter chip bar: Hotels, Manpower, Housekeeping, Cleaning, Catering, Facility Management, O&M, Supply, Subcontracting.
+  - Secondary dropdown filters for Sector and Service Category.
+- **Explainable Bid/No-Bid Decision Support (`ProposalWorkspace.tsx`, `proposal_and_boq.py`)**:
+  - Explainable multi-factor scoring (0–100) and 4 outcome levels (BID, CONDITIONAL_BID, REVIEW, NO_BID).
+  - Structured cards for Recommendation, Weighted Factors Matrix, Identified Risks, and Missing Information.
+- **BOQ Assistant Mathematical Integrity (`BOQAssistant.tsx`, `proposal_and_boq.py`)**:
+  - Line Total = Quantity × Unit Rate.
+  - Unpriced line items flagged with `is_price_missing: true` without fabricating market rates.
+  - 15% ZATCA VAT and markups calculated strictly according to commercial formula.
+- **Isolated PDF Export Flow (`pdfExport.ts`)**:
+  - Print/download job isolated via hidden iframe or blob download, keeping React SPA responsive.
 
 ---
 

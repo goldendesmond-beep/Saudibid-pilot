@@ -1,5 +1,5 @@
 import { api } from "./client";
-import type { PricingStats, WinRates, TrendPoint } from "./types";
+import type { PricingStats, WinRates, TrendSeries, TrendPoint } from "./types";
 
 export interface AnalyticsFilter {
   cpv?: string;
@@ -26,5 +26,5 @@ export const analyticsApi = {
   winRates: (filter: AnalyticsFilter = {}) =>
     api.get<WinRates>(`/analytics/win-rates${buildQuery(filter)}`),
   trends: (filter: AnalyticsFilter = {}) =>
-    api.get<TrendPoint[]>(`/analytics/trends${buildQuery(filter)}`),
+    api.get<TrendSeries | TrendPoint[]>(`/analytics/trends${buildQuery(filter)}`),
 };

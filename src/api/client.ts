@@ -37,7 +37,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  if (companyId) headers["X-Company-Id"] = companyId;
+  if (companyId) {
+    headers["X-Company-Id"] = companyId;
+    headers["X-Organization-Id"] = companyId;
+  }
 
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const targetUrl = `${BASE_URL}${normalizedPath}`;

@@ -365,32 +365,69 @@ export function generateDailyReportHtml(options: PDFExportOptions): string {
 
 export function printDailyReport(options: PDFExportOptions): void {
   const html = generateDailyReportHtml(options);
-  const printWindow = window.open("", "_blank");
-  if (printWindow) {
-    printWindow.document.open();
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-    }, 400);
-  } else {
-    // Fallback: create an iframe
+
+  // CRITICAL FIX: Never use window.open() or write to the main browser context window!
+  // In sandboxed iframes and webview containers, window.open() either navigates away,
+  // gets blocked, or overwrites document.write on the current window, destroying the
+  // React app state and breaking routing.
+  // Instead, create an isolated, hidden iframe purely for the print layout.
+  try {
     const iframe = document.createElement("iframe");
+    iframe.id = "bidpilot-pdf-print-frame";
     iframe.style.position = "fixed";
-    iframe.style.right = "0";
-    iframe.style.bottom = "0";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
-    iframe.style.border = "0";
+    iframe.style.top = "-9999px";
+    iframe.style.left = "-9999px";
+    iframe.style.width = "10px";
+    iframe.style.height = "10px";
+    iframe.style.border = "none";
+    iframe.style.visibility = "hidden";
+    iframe.setAttribute("aria-hidden", "true");
+
     document.body.appendChild(iframe);
-    iframe.contentDocument?.open();
-    iframe.contentDocument?.write(html);
-    iframe.contentDocument?.close();
-    iframe.contentWindow?.focus();
-    setTimeout(() => {
-      iframe.contentWindow?.print();
-      document.body.removeChild(iframe);
-    }, 500);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (doc) {
+      doc.open();
+      doc.write(html);
+      doc.close();
+
+      setTimeout(() => {
+        try {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+        } catch (err) {
+          console.warn("Direct iframe print unavailable in sandboxed environment, downloading instead:", err);
+          downloadDailyReportHtml(options);
+        } finally {
+          setTimeout(() => {
+            if (iframe.parentNode) {
+              iframe.parentNode.removeChild(iframe);
+            }
+          }, 3000);
+        }
+      }, 500);
+    } else {
+      downloadDailyReportHtml(options);
+    }
+  } catch (err) {
+    console.error("Failed to invoke print dialog, triggering direct HTML download fallback:", err);
+    downloadDailyReportHtml(options);
   }
+}
+
+export function downloadDailyReportHtml(options: PDFExportOptions, customFilename?: string): void {
+  const html = generateDailyReportHtml(options);
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = customFilename || `Tender_Intelligence_Report_${options.reportDate || new Date().toISOString().slice(0, 10)}.html`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    if (a.parentNode) {
+      a.parentNode.removeChild(a);
+    }
+    URL.revokeObjectURL(url);
+  }, 500);
 }

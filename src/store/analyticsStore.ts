@@ -45,12 +45,34 @@ export const useAnalyticsStore = create<AnalyticsState>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
-      const [pricing, winRates, trends] = await Promise.all([
+      const [pricing, winRatesRes, trendsRes] = await Promise.all([
         analyticsApi.pricing(filter),
         analyticsApi.winRates(filter),
         analyticsApi.trends(filter),
       ]);
-      set({ pricing, winRates, trends, isLoading: false });
+
+      const normalizedWinRates: WinRates = Array.isArray(winRatesRes)
+        ? { total_awards: winRatesRes.length, suppliers: winRatesRes }
+        : winRatesRes || { suppliers: [] };
+
+      const rawPoints: TrendPoint[] = Array.isArray(trendsRes)
+        ? (trendsRes as TrendPoint[])
+        : (trendsRes && typeof trendsRes === "object" && "points" in trendsRes && Array.isArray((trendsRes as { points: TrendPoint[] }).points)
+            ? (trendsRes as { points: TrendPoint[] }).points
+            : []);
+
+      const normalizedTrends: TrendPoint[] = rawPoints.map((p) => ({
+        ...p,
+        award_count: p.award_count ?? p.count,
+        total_amount: p.total_amount ?? p.total_value,
+      }));
+
+      set({
+        pricing,
+        winRates: normalizedWinRates,
+        trends: normalizedTrends,
+        isLoading: false,
+      });
     } catch (e) {
       set({
         error: e instanceof Error ? e.message : "Failed to load analytics data",

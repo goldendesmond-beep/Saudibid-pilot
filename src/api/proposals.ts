@@ -72,6 +72,9 @@ export interface ProposalModel {
     | "CANCELLED";
   bid_decision: "BID" | "CONDITIONAL_BID" | "REVIEW" | "NO_BID";
   bid_decision_score: number;
+  recommendation?: string;
+  risks?: string[];
+  missing_information?: string[];
   bid_decision_factors: Array<{
     factor_name: string;
     weight_percent: number;

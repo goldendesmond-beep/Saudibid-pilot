@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "../../i18n/useTranslation";
+import { useCompanyStore } from "../../store/companyStore";
 import {
   vendorApi,
   type VendorRegistrationRecord,
@@ -40,6 +41,7 @@ type WorkspaceTab = "registrations" | "dossier" | "vault" | "checklist" | "pipel
 
 export function VendorRegistrationWorkspace() {
   const { isAr } = useTranslation();
+  const { profile } = useCompanyStore();
   const [searchParams] = useSearchParams();
   const urlTab = searchParams.get("tab");
 
@@ -93,7 +95,7 @@ export function VendorRegistrationWorkspace() {
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [loadData, profile?.id]);
 
   const handleCopyText = (text: string, key: string) => {
     navigator.clipboard.writeText(text);

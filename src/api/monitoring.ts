@@ -20,6 +20,12 @@ export interface MonitoringRunResult {
   raw_records_found: number;
   canonical_opportunities_created: number;
   duplicates_merged: number;
+  new_records: number;
+  updated_records: number;
+  unchanged_records: number;
+  expired_records: number;
+  seed_fixture_excluded: number;
+  errors: string[];
   confirmed_opportunities: number;
   possible_opportunities: number;
   market_signals: number;

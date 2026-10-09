@@ -22,6 +22,62 @@ export interface SaudiSourceData {
   metadata?: Record<string, unknown>;
 }
 
+export interface SourceAuditSummaryCounts {
+  TOTAL_SOURCES: number;
+  WORKING_LIVE: number;
+  AUTHENTICATED_LIVE: number;
+  ASSISTED_IMPORT: number;
+  AUTH_REQUIRED: number;
+  RUNTIME_ENVIRONMENT_BLOCKED: number;
+  BLOCKED: number;
+  FIXTURE_ONLY: number;
+  UNAVAILABLE?: number;
+  UNKNOWN?: number;
+}
+
+export interface DetailedSourceAuditItem {
+  source_id: string;
+  source_name: string;
+  source_name_ar?: string;
+  official_domain: string;
+  resolved_endpoint?: string | null;
+  access_method: string;
+  status: string;
+  requires_auth: boolean;
+  authentication_requirement?: string;
+  real_records_count: number;
+  response_time_ms?: number;
+  http_status_code?: number | null;
+  exact_limitation_reason: string;
+  failure_reason?: string | null;
+  last_audited: string;
+  last_attempt?: string;
+  last_successful_live_fetch?: string | null;
+  fallback?: string;
+  legitimate_fallback?: string;
+  provenance?: string;
+  provenance_status?: string;
+  confidence?: string;
+  notes?: string;
+  pipeline?: {
+    fetch: string;
+    normalization: string;
+    validation: string;
+    deduplication: string;
+    provenance: string;
+    storage: string;
+    opportunity_output: string;
+  };
+}
+
+export interface SourceAuditReportResponse {
+  timestamp: string;
+  audit_summary?: SourceAuditSummaryCounts;
+  counts?: SourceAuditSummaryCounts;
+  comparison_with_previous_state?: Record<string, unknown>;
+  sources: DetailedSourceAuditItem[];
+}
+
 export const sourcesApi = {
   list: (params?: { authority_type?: string; is_active?: boolean }) => {
     const q = new URLSearchParams();
@@ -37,4 +93,5 @@ export const sourcesApi = {
     ),
   register: (source: Partial<SaudiSourceData> & { name: string; url: string }) =>
     api.post<SaudiSourceData>("/sources/register", source),
+  getAuditReport: () => api.get<SourceAuditReportResponse>("/sources/audit-report"),
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "../../i18n/useTranslation";
+import { useCompanyStore } from "../../store/companyStore";
 import {
   prequalApi,
   type CompanyVaultItem,
@@ -18,6 +19,7 @@ import {
 
 export function CompanyDocumentVault() {
   const { isAr } = useTranslation();
+  const { profile } = useCompanyStore();
 
   const [documents, setDocuments] = useState<CompanyVaultItem[]>([]);
   const [summary, setSummary] = useState<VaultSummary | null>(null);
@@ -51,7 +53,7 @@ export function CompanyDocumentVault() {
 
   useEffect(() => {
     loadVaultData();
-  }, [loadVaultData]);
+  }, [loadVaultData, profile?.id]);
 
   const handleOpenRenew = (doc: CompanyVaultItem) => {
     setSelectedDoc(doc);

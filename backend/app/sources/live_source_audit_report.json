@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-10-05T15:39:14.751415",
+  "timestamp": "2026-10-07T13:16:45.882177",
   "audit_summary": {
     "TOTAL_SOURCES": 42,
     "WORKING_LIVE": 1,
     "AUTHENTICATED_LIVE": 0,
     "ASSISTED_IMPORT": 2,
-    "AUTH_REQUIRED": 9,
-    "RUNTIME_ENVIRONMENT_BLOCKED": 8,
-    "BLOCKED": 22,
+    "AUTH_REQUIRED": 8,
+    "RUNTIME_ENVIRONMENT_BLOCKED": 10,
+    "BLOCKED": 21,
     "FIXTURE_ONLY": 0
   },
   "counts": {
@@ -15,9 +15,9 @@
     "WORKING_LIVE": 1,
     "AUTHENTICATED_LIVE": 0,
     "ASSISTED_IMPORT": 2,
-    "AUTH_REQUIRED": 9,
-    "RUNTIME_ENVIRONMENT_BLOCKED": 8,
-    "BLOCKED": 22,
+    "AUTH_REQUIRED": 8,
+    "RUNTIME_ENVIRONMENT_BLOCKED": 10,
+    "BLOCKED": 21,
     "FIXTURE_ONLY": 0
   },
   "comparison_with_previous_state": {
@@ -46,9 +46,9 @@
       "WORKING_LIVE": 1,
       "AUTHENTICATED_LIVE": 0,
       "ASSISTED_IMPORT": 2,
-      "AUTH_REQUIRED": 9,
-      "RUNTIME_ENVIRONMENT_BLOCKED": 8,
-      "BLOCKED": 22,
+      "AUTH_REQUIRED": 8,
+      "RUNTIME_ENVIRONMENT_BLOCKED": 10,
+      "BLOCKED": 21,
       "FIXTURE_ONLY": 0
     },
     "delta_notes": "Truthful socket probe across all 42 sources. Zero false live labels. Only SPA is genuinely WORKING_LIVE; Etimad & Tadawul verified ASSISTED_IMPORT."
@@ -62,11 +62,17 @@
       "access_method": "AUTHENTICATED_ARAMCO_SUPPLIER_PORTAL (IKTVA) / PUBLIC_SIGNALS",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SAP_ARIBA_IKTVA",
       "real_records_count": 0,
       "response_time_ms": 60,
       "http_status_code": 200,
       "exact_limitation_reason": "Corporate SAP Ariba gateway requires authenticated IKTVA contractor credentials. No hardcoded credentials permitted.",
-      "last_audited": "2026-10-05T15:39:02.383369"
+      "failure_reason": "Corporate SAP Ariba gateway requires authenticated IKTVA contractor credentials. No hardcoded credentials permitted.",
+      "last_attempt": "2026-10-07T13:16:36.889610",
+      "last_audited": "2026-10-07T13:16:36.889610",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_ARAMCO"
     },
     {
       "source_id": "src-asfar",
@@ -76,11 +82,17 @@
       "access_method": "HTTP_GET",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1547,
+      "response_time_ms": 2101,
       "http_status_code": 200,
       "exact_limitation_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
-      "last_audited": "2026-10-05T15:39:08.027299"
+      "failure_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
+      "last_attempt": "2026-10-07T13:16:43.172172",
+      "last_audited": "2026-10-07T13:16:43.172172",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_ASFAR"
     },
     {
       "source_id": "src-boutique-group",
@@ -90,11 +102,17 @@
       "access_method": "HTTP_GET",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1489,
+      "response_time_ms": 1768,
       "http_status_code": 200,
       "exact_limitation_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
-      "last_audited": "2026-10-05T15:39:08.051387"
+      "failure_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
+      "last_attempt": "2026-10-07T13:16:42.884108",
+      "last_audited": "2026-10-07T13:16:42.884108",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_BOUTIQUE_GROUP"
     },
     {
       "source_id": "src-cruise-saudi",
@@ -104,11 +122,17 @@
       "access_method": "HTTP_GET",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 4096,
+      "response_time_ms": 3179,
       "http_status_code": 200,
       "exact_limitation_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
-      "last_audited": "2026-10-05T15:39:10.261922"
+      "failure_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
+      "last_attempt": "2026-10-07T13:16:44.019996",
+      "last_audited": "2026-10-07T13:16:44.019996",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_CRUISE_SAUDI"
     },
     {
       "source_id": "src-dammam-airports",
@@ -118,11 +142,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1940,
+      "response_time_ms": 1414,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:04.434990"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:38.098915",
+      "last_audited": "2026-10-07T13:16:38.098915",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_DAMMAM_AIRPORTS"
     },
     {
       "source_id": "src-diriyah",
@@ -132,11 +162,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 3604,
+      "response_time_ms": 2606,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:07.715457"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:40.838574",
+      "last_audited": "2026-10-07T13:16:40.838574",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_DIRIYAH"
     },
     {
       "source_id": "src-etimad",
@@ -146,11 +182,17 @@
       "access_method": "ETIMAD_OFFICIAL_FILE_IMPORT / TENDER_URL_IMPORT",
       "status": "ASSISTED_IMPORT",
       "requires_auth": false,
+      "authentication_requirement": "NAFATH_ABSHER_2FA",
       "real_records_count": 0,
       "response_time_ms": 45,
       "http_status_code": 403,
       "exact_limitation_reason": "Absher/Nafath 2FA and MOF Geo-firewall blocks automated non-KSA container requests. Legitimate assisted import active.",
-      "last_audited": "2026-10-05T15:39:02.492800"
+      "failure_reason": "Absher/Nafath 2FA and MOF Geo-firewall blocks automated non-KSA container requests. Legitimate assisted import active.",
+      "last_attempt": "2026-10-07T13:16:36.284440",
+      "last_audited": "2026-10-07T13:16:36.284440",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT",
+      "provenance": "ETIMAD_OFFICIAL_FILE_AND_URL_IMPORT"
     },
     {
       "source_id": "src-furas",
@@ -160,11 +202,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
-      "response_time_ms": 2672,
+      "response_time_ms": 3117,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:04.092535"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:38.868753",
+      "last_audited": "2026-10-07T13:16:38.868753",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_FURAS"
     },
     {
       "source_id": "src-jazan-city",
@@ -174,11 +222,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
-      "response_time_ms": 830,
+      "response_time_ms": 615,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:04.110815"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:38.265983",
+      "last_audited": "2026-10-07T13:16:38.265983",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_JAZAN_CITY"
     },
     {
       "source_id": "src-jeddah-airports",
@@ -188,11 +242,17 @@
       "access_method": "HTTP_GET",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 418,
+      "response_time_ms": 802,
       "http_status_code": null,
       "exact_limitation_reason": "Network URLError: [Errno -2] Name or service not known",
-      "last_audited": "2026-10-05T15:39:02.803451"
+      "failure_reason": "Network URLError: [Errno -2] Name or service not known",
+      "last_attempt": "2026-10-07T13:16:37.091581",
+      "last_audited": "2026-10-07T13:16:37.091581",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_JEDDAH_AIRPORTS"
     },
     {
       "source_id": "src-jeddah-central",
@@ -202,11 +262,17 @@
       "access_method": "HTTP_GET",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 2661,
+      "response_time_ms": 2691,
       "http_status_code": null,
       "exact_limitation_reason": "Network URLError: timed out",
-      "last_audited": "2026-10-05T15:39:07.578682"
+      "failure_reason": "Network URLError: timed out",
+      "last_attempt": "2026-10-07T13:16:42.409212",
+      "last_audited": "2026-10-07T13:16:42.409212",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_JEDDAH_CENTRAL"
     },
     {
       "source_id": "src-kaec",
@@ -216,11 +282,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1442,
+      "response_time_ms": 6206,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:04.623520"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:43.691339",
+      "last_audited": "2026-10-07T13:16:43.691339",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_KAEC"
     },
     {
       "source_id": "src-kap",
@@ -230,11 +302,17 @@
       "access_method": "HTTP_GET",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1515,
+      "response_time_ms": 3625,
       "http_status_code": 200,
       "exact_limitation_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
-      "last_audited": "2026-10-05T15:39:04.573790"
+      "failure_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
+      "last_attempt": "2026-10-07T13:16:40.971565",
+      "last_audited": "2026-10-07T13:16:40.971565",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_KAP"
     },
     {
       "source_id": "src-king-salman-park",
@@ -244,11 +322,17 @@
       "access_method": "HTTP_GET",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 2642,
+      "response_time_ms": 2733,
       "http_status_code": null,
       "exact_limitation_reason": "Network URLError: timed out",
-      "last_audited": "2026-10-05T15:39:08.077135"
+      "failure_reason": "Network URLError: timed out",
+      "last_attempt": "2026-10-07T13:16:42.576973",
+      "last_audited": "2026-10-07T13:16:42.576973",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_KING_SALMAN_PARK"
     },
     {
       "source_id": "src-maaden",
@@ -258,11 +342,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1760,
+      "response_time_ms": 2088,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:03.181147"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:37.840188",
+      "last_audited": "2026-10-07T13:16:37.840188",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_MAADEN"
     },
     {
       "source_id": "src-matarat",
@@ -272,11 +362,17 @@
       "access_method": "HTTP_GET",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 3916,
+      "response_time_ms": 4012,
       "http_status_code": null,
       "exact_limitation_reason": "Network URLError: timed out",
-      "last_audited": "2026-10-05T15:39:05.502327"
+      "failure_reason": "Network URLError: timed out",
+      "last_attempt": "2026-10-07T13:16:39.964436",
+      "last_audited": "2026-10-07T13:16:39.964436",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_MATARAT"
     },
     {
       "source_id": "src-mawani",
@@ -286,11 +382,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
-      "response_time_ms": 3259,
+      "response_time_ms": 4505,
       "http_status_code": 405,
       "exact_limitation_reason": "HTTP 405: Not Allowed",
-      "last_audited": "2026-10-05T15:39:06.059887"
+      "failure_reason": "HTTP 405: Not Allowed",
+      "last_attempt": "2026-10-07T13:16:41.464134",
+      "last_audited": "2026-10-07T13:16:41.464134",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_MAWANI"
     },
     {
       "source_id": "src-modon",
@@ -300,11 +402,17 @@
       "access_method": "HTTP_GET",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
-      "response_time_ms": 5741,
+      "response_time_ms": 5663,
       "http_status_code": null,
       "exact_limitation_reason": "Connection timeout: The read operation timed out",
-      "last_audited": "2026-10-05T15:39:08.641894"
+      "failure_reason": "Connection timeout: The read operation timed out",
+      "last_attempt": "2026-10-07T13:16:42.940166",
+      "last_audited": "2026-10-07T13:16:42.940166",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_MODON"
     },
     {
       "source_id": "src-musahama",
@@ -314,11 +422,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 5017,
+      "response_time_ms": 1624,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:06.439249"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:37.392608",
+      "last_audited": "2026-10-07T13:16:37.392608",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_MUSAHAMA"
     },
     {
       "source_id": "src-ncp",
@@ -328,11 +442,17 @@
       "access_method": "ASSISTED_IMPORT / CONTAINER_EGRESS_CONNECTOR",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
       "response_time_ms": 2500,
       "http_status_code": 504,
       "exact_limitation_reason": "Government network perimeter filtering / connection timed out on international Cloud Run container IPs. Legitimate fallback: ASSISTED_IMPORT.",
-      "last_audited": "2026-10-05T15:39:02.798757"
+      "failure_reason": "Government network perimeter filtering / connection timed out on international Cloud Run container IPs. Legitimate fallback: ASSISTED_IMPORT.",
+      "last_attempt": "2026-10-07T13:16:37.275761",
+      "last_audited": "2026-10-07T13:16:37.275761",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / CONTAINER_EGRESS_CONNECTOR",
+      "provenance": "OFFICIAL_PORTAL_SRC_NCP"
     },
     {
       "source_id": "src-neom",
@@ -342,11 +462,17 @@
       "access_method": "HTTP_GET",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 7546,
+      "response_time_ms": 6225,
       "http_status_code": 200,
       "exact_limitation_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
-      "last_audited": "2026-10-05T15:39:10.837721"
+      "failure_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
+      "last_attempt": "2026-10-07T13:16:44.074411",
+      "last_audited": "2026-10-07T13:16:44.074411",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_NEOM"
     },
     {
       "source_id": "src-new-murabba",
@@ -356,11 +482,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 481,
+      "response_time_ms": 1518,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:04.916607"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:39.843418",
+      "last_audited": "2026-10-07T13:16:39.843418",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_NEW_MURABBA"
     },
     {
       "source_id": "src-nhc",
@@ -370,11 +502,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1174,
+      "response_time_ms": 185,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:08.050407"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:41.650205",
+      "last_audited": "2026-10-07T13:16:41.650205",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_NHC"
     },
     {
       "source_id": "src-nwc",
@@ -384,11 +522,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1759,
+      "response_time_ms": 7003,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:03.285646"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:42.891349",
+      "last_audited": "2026-10-07T13:16:42.891349",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_NWC"
     },
     {
       "source_id": "src-pif",
@@ -398,11 +542,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 5064,
+      "response_time_ms": 94,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:12.251584"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:41.744886",
+      "last_audited": "2026-10-07T13:16:41.744886",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_PIF"
     },
     {
       "source_id": "src-qiddiya",
@@ -412,11 +562,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 80,
+      "response_time_ms": 132,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:04.173120"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:38.231688",
+      "last_audited": "2026-10-07T13:16:38.231688",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_QIDDIYA"
     },
     {
       "source_id": "src-rac",
@@ -426,11 +582,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1744,
+      "response_time_ms": 2137,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:03.379341"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:38.097787",
+      "last_audited": "2026-10-07T13:16:38.097787",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_RAC"
     },
     {
       "source_id": "src-rcjy",
@@ -440,11 +602,17 @@
       "access_method": "ASSISTED_IMPORT / CONTAINER_EGRESS_CONNECTOR",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
       "response_time_ms": 2500,
       "http_status_code": 504,
       "exact_limitation_reason": "Government network perimeter filtering / connection timed out on international Cloud Run container IPs. Legitimate fallback: ASSISTED_IMPORT.",
-      "last_audited": "2026-10-05T15:39:02.898308"
+      "failure_reason": "Government network perimeter filtering / connection timed out on international Cloud Run container IPs. Legitimate fallback: ASSISTED_IMPORT.",
+      "last_attempt": "2026-10-07T13:16:36.681613",
+      "last_audited": "2026-10-07T13:16:36.681613",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / CONTAINER_EGRESS_CONNECTOR",
+      "provenance": "OFFICIAL_PORTAL_SRC_RCJY"
     },
     {
       "source_id": "src-redsea",
@@ -454,11 +622,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 3806,
+      "response_time_ms": 2643,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:07.186451"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:40.742221",
+      "last_audited": "2026-10-07T13:16:40.742221",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_REDSEA"
     },
     {
       "source_id": "src-roshn",
@@ -468,11 +642,17 @@
       "access_method": "HTTP_GET",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 4064,
+      "response_time_ms": 3907,
       "http_status_code": 200,
       "exact_limitation_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
-      "last_audited": "2026-10-05T15:39:08.259821"
+      "failure_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
+      "last_attempt": "2026-10-07T13:16:42.218213",
+      "last_audited": "2026-10-07T13:16:42.218213",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_ROSHN"
     },
     {
       "source_id": "src-rua-almadinah",
@@ -482,11 +662,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 10125,
+      "response_time_ms": 5541,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:14.748845"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:45.214190",
+      "last_audited": "2026-10-07T13:16:45.214190",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_RUA_ALMADINAH"
     },
     {
       "source_id": "src-sabic",
@@ -494,13 +680,19 @@
       "official_domain": "https://www.sabic.com",
       "resolved_endpoint": "https://www.sabic.com/en/procurement",
       "access_method": "HTTP_GET",
-      "status": "BLOCKED",
+      "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 5418,
-      "http_status_code": 307,
-      "exact_limitation_reason": "HTTP 307: The HTTP server returned a redirect error that would lead to an infinite loop.\nThe last 30x error message was:\nTemporary Redirect",
-      "last_audited": "2026-10-05T15:39:06.875360"
+      "response_time_ms": 4633,
+      "http_status_code": null,
+      "exact_limitation_reason": "Network URLError: timed out",
+      "failure_reason": "Network URLError: timed out",
+      "last_attempt": "2026-10-07T13:16:40.446891",
+      "last_audited": "2026-10-07T13:16:40.446891",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_SABIC"
     },
     {
       "source_id": "src-sar",
@@ -510,11 +702,17 @@
       "access_method": "HTTP_GET",
       "status": "AUTH_REQUIRED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1859,
+      "response_time_ms": 1897,
       "http_status_code": 401,
       "exact_limitation_reason": "HTTP 401 Unauthorized: Enterprise authentication required.",
-      "last_audited": "2026-10-05T15:39:03.280080"
+      "failure_reason": "HTTP 401 Unauthorized: Enterprise authentication required.",
+      "last_attempt": "2026-10-07T13:16:37.650224",
+      "last_audited": "2026-10-07T13:16:37.650224",
+      "last_successful_live_fetch": null,
+      "fallback": "VENDOR_REGISTRATION_PORTAL_DISCOVERY",
+      "provenance": "OFFICIAL_PORTAL_SRC_SAR"
     },
     {
       "source_id": "src-sec",
@@ -524,11 +722,17 @@
       "access_method": "HTTP_GET",
       "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1437,
+      "response_time_ms": 1661,
       "http_status_code": null,
       "exact_limitation_reason": "Network URLError: [Errno -2] Name or service not known",
-      "last_audited": "2026-10-05T15:39:02.901822"
+      "failure_reason": "Network URLError: [Errno -2] Name or service not known",
+      "last_attempt": "2026-10-07T13:16:37.483983",
+      "last_audited": "2026-10-07T13:16:37.483983",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_SEC"
     },
     {
       "source_id": "src-seven",
@@ -538,11 +742,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 2583,
+      "response_time_ms": 5108,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:08.198743"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:45.555971",
+      "last_audited": "2026-10-07T13:16:45.555971",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_SEVEN"
     },
     {
       "source_id": "src-soudah",
@@ -552,11 +762,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1685,
+      "response_time_ms": 5402,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:06.259523"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:44.271553",
+      "last_audited": "2026-10-07T13:16:44.271553",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_SOUDAH"
     },
     {
       "source_id": "src-spa",
@@ -566,11 +782,17 @@
       "access_method": "LIVE_HTTP_SCRAPE_AND_PARSING",
       "status": "WORKING_LIVE",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 1,
-      "response_time_ms": 4175,
+      "response_time_ms": 3891,
       "http_status_code": 200,
       "exact_limitation_reason": "None. Verified live endpoint accessible with official contract disclosure releases.",
-      "last_audited": "2026-10-05T15:39:05.614766"
+      "failure_reason": null,
+      "last_attempt": "2026-10-07T13:16:39.671879",
+      "last_audited": "2026-10-07T13:16:39.671879",
+      "last_successful_live_fetch": "2026-10-07T13:16:39.671879",
+      "fallback": "NONE (LIVE STREAM ACTIVE)",
+      "provenance": "SPA_OFFICIAL_GOVERNMENT_LIVE_FEED"
     },
     {
       "source_id": "src-spark",
@@ -580,11 +802,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 8698,
+      "response_time_ms": 931,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:11.600897"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:38.324227",
+      "last_audited": "2026-10-07T13:16:38.324227",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_SPARK"
     },
     {
       "source_id": "src-sports-boulevard",
@@ -592,13 +820,19 @@
       "official_domain": "https://sportsboulevard.sa",
       "resolved_endpoint": "https://sportsboulevard.sa",
       "access_method": "HTTP_GET",
-      "status": "AUTH_REQUIRED",
+      "status": "RUNTIME_ENVIRONMENT_BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 1916,
-      "http_status_code": 200,
-      "exact_limitation_reason": "Public portal responds HTTP 200; actual tender bidding requires verified supplier authentication.",
-      "last_audited": "2026-10-05T15:39:07.884482"
+      "response_time_ms": 2652,
+      "http_status_code": null,
+      "exact_limitation_reason": "Network URLError: timed out",
+      "failure_reason": "Network URLError: timed out",
+      "last_attempt": "2026-10-07T13:16:42.617301",
+      "last_audited": "2026-10-07T13:16:42.617301",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_SPORTS_BOULEVARD"
     },
     {
       "source_id": "src-swa",
@@ -608,11 +842,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
-      "response_time_ms": 5735,
+      "response_time_ms": 10022,
       "http_status_code": 404,
       "exact_limitation_reason": "HTTP 404: Not Found",
-      "last_audited": "2026-10-05T15:39:07.241854"
+      "failure_reason": "HTTP 404: Not Found",
+      "last_attempt": "2026-10-07T13:16:45.880073",
+      "last_audited": "2026-10-07T13:16:45.880073",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_SWA"
     },
     {
       "source_id": "src-tadawul",
@@ -622,11 +862,17 @@
       "access_method": "TADAWUL_ASSISTED_DISCLOSURE_IMPORT",
       "status": "ASSISTED_IMPORT",
       "requires_auth": false,
+      "authentication_requirement": "NONE",
       "real_records_count": 0,
       "response_time_ms": 52,
       "http_status_code": 403,
       "exact_limitation_reason": "Cloudflare WAF / Anti-Bot protection returns HTTP 403 Forbidden. Bypass is prohibited. Legitimate assisted import active.",
-      "last_audited": "2026-10-05T15:39:07.283705"
+      "failure_reason": "Cloudflare WAF / Anti-Bot protection returns HTTP 403 Forbidden. Bypass is prohibited. Legitimate assisted import active.",
+      "last_attempt": "2026-10-07T13:16:41.795382",
+      "last_audited": "2026-10-07T13:16:41.795382",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT",
+      "provenance": "TADAWUL_OFFICIAL_DISCLOSURE_IMPORT"
     },
     {
       "source_id": "src-wttco",
@@ -636,11 +882,17 @@
       "access_method": "HTTP_GET",
       "status": "BLOCKED",
       "requires_auth": true,
+      "authentication_requirement": "SUPPLIER_PORTAL_AUTH",
       "real_records_count": 0,
-      "response_time_ms": 3892,
+      "response_time_ms": 3795,
       "http_status_code": 403,
       "exact_limitation_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
-      "last_audited": "2026-10-05T15:39:05.434365"
+      "failure_reason": "HTTP 403 Forbidden: Perimeter firewall or WAF blocks automated container queries.",
+      "last_attempt": "2026-10-07T13:16:39.718034",
+      "last_audited": "2026-10-07T13:16:39.718034",
+      "last_successful_live_fetch": null,
+      "fallback": "ASSISTED_IMPORT / OFFICIAL_WEBSITE_REFERENCE",
+      "provenance": "OFFICIAL_PORTAL_SRC_WTTCO"
     }
   ]
 }

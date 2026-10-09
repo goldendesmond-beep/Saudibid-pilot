@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "../i18n/useTranslation";
 import {
   type DailySnapshotItem,
+  type MonitoringRunResult,
   monitoringApi,
 } from "../api/monitoring";
 import { printDailyReport } from "../utils/pdfExport";
@@ -11,6 +12,10 @@ import {
   Calendar,
   ShieldCheck,
   Clock,
+  CheckCircle2,
+  Lock,
+  XCircle,
+  RefreshCw,
 } from "lucide-react";
 
 interface DailyMonitoringDashboardProps {
@@ -29,13 +34,25 @@ export const DailyMonitoringDashboard: React.FC<DailyMonitoringDashboardProps> =
   const { isRTL } = useTranslation();
   const [isRunning, setIsRunning] = useState(false);
   const [selectedSnapshot, setSelectedSnapshot] = useState<DailySnapshotItem | null>(currentSnapshot || null);
+  const [latestRun, setLatestRun] = useState<MonitoringRunResult | null>(null);
+
+  useEffect(() => {
+    monitoringApi.listRuns()
+      .then((runs) => {
+        if (runs && runs.length > 0) {
+          setLatestRun(runs[0]);
+        }
+      })
+      .catch((err) => console.error("Failed to load monitoring runs:", err));
+  }, []);
 
   const activeSnapshot = selectedSnapshot || currentSnapshot || snapshots[0];
 
   const handleRunMonitoring = async (allowFixtures: boolean = false) => {
     setIsRunning(true);
     try {
-      await monitoringApi.runDailyMonitoring(allowFixtures);
+      const runResult = await monitoringApi.runDailyMonitoring(allowFixtures);
+      setLatestRun(runResult);
       onRefresh();
     } catch (err) {
       console.error("Failed to run monitoring:", err);
@@ -191,6 +208,98 @@ export const DailyMonitoringDashboard: React.FC<DailyMonitoringDashboardProps> =
           </div>
         </div>
       </div>
+
+      {/* Live Refresh Pipeline Audit Panel */}
+      {latestRun && (
+        <div className="bg-slate-900/90 border border-emerald-500/30 rounded-xl p-5 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <RefreshCw className="w-5 h-5 text-emerald-400 animate-spin-once" />
+              <div>
+                <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+                  <span>{isRTL ? "نتائج دورة التحديث والفحص المباشر (Daily Source Refresh)" : "Daily Source Refresh & Lifecycle Audit"}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    REAL_PIPELINE
+                  </span>
+                </h3>
+                <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                  Run ID: {latestRun.id} • {isRTL ? "الوقت:" : "Timestamp:"} {latestRun.timestamp}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400 font-mono">
+                {isRTL ? "المصادر المفحوصة:" : "Sources Attempted:"} <strong className="text-slate-100">{latestRun.sources_attempted}</strong>
+              </span>
+            </div>
+          </div>
+
+          {/* Refresh Lifecycle Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-2.5 text-center">
+              <span className="text-xs text-slate-400 block mb-0.5">{isRTL ? "مصادر ناجحة" : "Sources Succeeded"}</span>
+              <span className="text-base font-extrabold text-emerald-400 font-mono flex items-center justify-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                {latestRun.sources_successful}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-2.5 text-center">
+              <span className="text-xs text-slate-400 block mb-0.5">{isRTL ? "مصادر محجوبة" : "Sources Blocked"}</span>
+              <span className="text-base font-extrabold text-rose-400 font-mono flex items-center justify-center gap-1">
+                <XCircle className="w-3.5 h-3.5" />
+                {latestRun.sources_blocked}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-2.5 text-center">
+              <span className="text-xs text-slate-400 block mb-0.5">{isRTL ? "تتطلب اعتماد" : "Auth Required"}</span>
+              <span className="text-base font-extrabold text-amber-400 font-mono flex items-center justify-center gap-1">
+                <Lock className="w-3.5 h-3.5" />
+                {latestRun.sources_auth_required}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-2.5 text-center">
+              <span className="text-xs text-slate-400 block mb-0.5">{isRTL ? "فرص جديدة (NEW)" : "New Records"}</span>
+              <span className="text-base font-extrabold text-emerald-400 font-mono">
+                {latestRun.new_records}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-2.5 text-center">
+              <span className="text-xs text-slate-400 block mb-0.5">{isRTL ? "محدثة (UPDATED)" : "Updated Records"}</span>
+              <span className="text-base font-extrabold text-blue-400 font-mono">
+                {latestRun.updated_records}
+              </span>
+            </div>
+
+            <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-2.5 text-center">
+              <span className="text-xs text-slate-400 block mb-0.5">{isRTL ? "دون تغيير (UNCHANGED)" : "Unchanged"}</span>
+              <span className="text-base font-extrabold text-slate-300 font-mono">
+                {latestRun.unchanged_records}
+              </span>
+            </div>
+          </div>
+
+          {/* Secondary stats row */}
+          <div className="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/80 gap-2 font-mono">
+            <span>
+              {isRTL ? "إجمالي السجلات المكتشفة حياً" : "Real Records Discovered"}: <strong className="text-emerald-400">{latestRun.raw_records_found}</strong>
+            </span>
+            <span>
+              {isRTL ? "السجلات منتهية الصلاحية" : "Expired / Archived"}: <strong className="text-rose-400">{latestRun.expired_records}</strong>
+            </span>
+            <span>
+              {isRTL ? "بيانات تجريبية مستبعدة (Seed/Fixture)" : "Seed/Fixture Excluded"}: <strong className="text-amber-400">{latestRun.seed_fixture_excluded}</strong>
+            </span>
+            <span>
+              {isRTL ? "الأخطاء" : "Errors"}: <strong className={latestRun.errors.length > 0 ? "text-rose-400" : "text-emerald-400"}>{latestRun.errors.length}</strong>
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Daily History Timeline (Part D) */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-sm space-y-4">

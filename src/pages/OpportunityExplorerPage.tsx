@@ -1,23 +1,25 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { OpportunityExplorer } from "../components/OpportunityExplorer";
+import { OpportunityDetailModal } from "../components/OpportunityDetailModal";
 import { intelligenceApi, type IntelligenceEvaluationResult } from "../api/intelligence";
 import { savedListsApi, type SavedListModel } from "../api/savedLists";
 import { actionCenterApi, type ActionCenterSummary } from "../api/actionCenter";
 import { prequalApi, type VaultSummary } from "../api/prequalification";
 import { proposalApi } from "../api/proposals";
+import { monitoringApi } from "../api/monitoring";
 import { useCompanyStore } from "../store/companyStore";
 import { useTranslation } from "../i18n/useTranslation";
 import {
   Compass,
   RefreshCw,
-  X,
   Award,
   Layers,
   FileCheck2,
   FileSpreadsheet,
   AlertCircle,
   ArrowUpRight,
+  Play,
 } from "lucide-react";
 
 export function OpportunityExplorerPage() {
@@ -29,14 +31,16 @@ export function OpportunityExplorerPage() {
   const [vaultSummary, setVaultSummary] = useState<VaultSummary | null>(null);
   const [activeProposalsCount, setActiveProposalsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [isRefreshingSources, setIsRefreshingSources] = useState(false);
   const [selectedOpp, setSelectedOpp] = useState<IntelligenceEvaluationResult | null>(null);
 
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
+      const currentCompanyId = profile?.id || "comp-001";
       const [opps, lists, actSum, vltSum, props] = await Promise.all([
-        intelligenceApi.evaluate(profile?.id || "comp-sa-001"),
-        savedListsApi.list("comp-sa-001"),
+        intelligenceApi.evaluate(currentCompanyId),
+        savedListsApi.list(currentCompanyId),
         actionCenterApi.getActionSummary().catch(() => null),
         prequalApi.getVaultSummary().catch(() => null),
         proposalApi.getProposals().catch(() => []),
@@ -53,6 +57,19 @@ export function OpportunityExplorerPage() {
     }
   }, [profile?.id]);
 
+  const handleLiveRefresh = async () => {
+    try {
+      setIsRefreshingSources(true);
+      await monitoringApi.runDailyMonitoring();
+      await loadData();
+    } catch (err) {
+      console.error("Failed during live source refresh:", err);
+      await loadData();
+    } finally {
+      setIsRefreshingSources(false);
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -60,11 +77,12 @@ export function OpportunityExplorerPage() {
   const allSavedOppIds = savedLists.flatMap((l) => l.opportunity_ids || []);
 
   const handleToggleSave = async (oppId: string) => {
+    const currentCompanyId = profile?.id || "comp-001";
     if (savedLists.length === 0) {
       const created = await savedListsApi.create({
         name: "My Saved Opportunities",
         opportunity_ids: [oppId],
-        company_id: "comp-sa-001",
+        company_id: currentCompanyId,
       });
       setSavedLists([created]);
       return;
@@ -98,14 +116,26 @@ export function OpportunityExplorerPage() {
           </p>
         </div>
 
-        <button
-          onClick={loadData}
-          disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-semibold text-slate-200 hover:bg-slate-700 disabled:opacity-50 transition-colors self-start sm:self-auto"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-          <span>{isRTL ? "تحديث الفرص" : "Refresh Opportunities"}</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={handleLiveRefresh}
+            disabled={isRefreshingSources || loading}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-emerald-500/50 bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white disabled:opacity-50 transition-colors shadow-xs"
+            title={isRTL ? "تشغيل خط فحص المصادر الحية والتحديث الفوري" : "Execute Live Source Refresh Pipeline"}
+          >
+            <Play className={`w-3.5 h-3.5 ${isRefreshingSources ? "animate-spin" : ""}`} />
+            <span>{isRefreshingSources ? (isRTL ? "جارٍ فحص المصادر..." : "Scanning Sources...") : (isRTL ? "تحديث وفحص المصادر الحية" : "Live Source Scan & Refresh")}</span>
+          </button>
+
+          <button
+            onClick={loadData}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-semibold text-slate-200 hover:bg-slate-700 disabled:opacity-50 transition-colors"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+            <span>{isRTL ? "إعادة تحميل" : "Reload"}</span>
+          </button>
+        </div>
       </div>
 
       {/* Stage 1-10 End-to-End Intelligence & Action Command Bar */}
@@ -257,111 +287,22 @@ export function OpportunityExplorerPage() {
 
       {/* Selected Opportunity Intelligence Modal / Drawer */}
       {selectedOpp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl text-start">
-            <div className="flex items-start justify-between pb-3 border-b border-slate-800">
-              <div className="space-y-1">
-                <span className="text-xs font-mono text-emerald-400">{selectedOpp.entity} • {selectedOpp.city}</span>
-                <h3 className="text-base font-bold text-slate-100">
-                  {isRTL && selectedOpp.opportunity_title_ar ? selectedOpp.opportunity_title_ar : selectedOpp.opportunity_title}
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedOpp(null)}
-                className="text-slate-400 hover:text-slate-200 p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Score & Eligibility Overview */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-center">
-                <span className="text-xs text-slate-400 block">{isRTL ? "درجة التطابق" : "Match Score"}</span>
-                <span className="text-xl font-extrabold text-emerald-400">{selectedOpp.match_score.total_score}%</span>
-                <span className="text-[10px] block text-slate-400">{selectedOpp.match_score.label}</span>
-              </div>
-
-              <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-center">
-                <span className="text-xs text-slate-400 block">{isRTL ? "الأهلية النظامية" : "Eligibility"}</span>
-                <span className="text-xs font-bold text-slate-200 mt-1 block">{selectedOpp.eligibility.status}</span>
-              </div>
-
-              <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-center">
-                <span className="text-xs text-slate-400 block">{isRTL ? "الميزانية المعتمدة" : "Budget"}</span>
-                <span className="text-xs font-bold text-slate-200 mt-1 block">
-                  {selectedOpp.budget_sar ? `${selectedOpp.budget_sar.toLocaleString()} SAR` : "UNKNOWN"}
-                </span>
-              </div>
-
-              <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-center">
-                <span className="text-xs text-slate-400 block">{isRTL ? "الموعد النهائي" : "Closing"}</span>
-                <span className="text-xs font-bold text-slate-200 mt-1 block">
-                  {selectedOpp.closing_date ? selectedOpp.closing_date.slice(0, 10) : "UNKNOWN"}
-                </span>
-              </div>
-            </div>
-
-            {/* Score Breakdown */}
-            <div className="space-y-2 p-3 bg-slate-950/40 rounded-lg border border-slate-800 text-xs">
-              <span className="font-bold text-slate-300 block">{isRTL ? "تفكيك درجة التطابق الحسابية:" : "Match Score Component Breakdown:"}</span>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-slate-400">
-                <div>Activity Fit: <strong className="text-slate-200">{selectedOpp.match_score.components.activity_fit}/25</strong></div>
-                <div>Geographic Fit: <strong className="text-slate-200">{selectedOpp.match_score.components.geographic_fit}/20</strong></div>
-                <div>Scale Fit: <strong className="text-slate-200">{selectedOpp.match_score.components.project_scale_fit}/20</strong></div>
-                <div>Capacity: <strong className="text-slate-200">{selectedOpp.match_score.components.capacity_fit}/15</strong></div>
-                <div>Preference: <strong className="text-slate-200">{selectedOpp.match_score.components.preference_fit}/10</strong></div>
-                <div>Semantic Fit: <strong className="text-slate-200">{selectedOpp.match_score.components.semantic_fit}/10</strong></div>
-              </div>
-            </div>
-
-            {/* Subcontracting Potential */}
-            {selectedOpp.subcontract.is_subcontract_target && (
-              <div className="p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-lg text-xs text-emerald-300 space-y-1">
-                <div className="flex items-center gap-1.5 font-bold">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>{isRTL ? "بديل مقاولة الباطن الموصى به" : "Subcontracting Alternative Target"}</span>
-                </div>
-                <p>{selectedOpp.subcontract.subcontract_rationale.join(" ")}</p>
-                <div className="text-[11px] text-emerald-400 font-semibold">
-                  {isRTL ? "الموقع التنافسي الموصى به:" : "Recommended Positioning:"} {selectedOpp.subcontract.recommended_positioning}
-                </div>
-              </div>
-            )}
-
-            {/* Gap Analysis */}
-            <div className="space-y-2 p-3 bg-slate-950/40 rounded-lg border border-slate-800 text-xs">
-              <span className="font-bold text-slate-300 block">{isRTL ? "تحليل الفجوات والقدرات المتاحة:" : "Capability Gap Analysis:"}</span>
-              <div className="space-y-1">
-                <div className="text-emerald-400">
-                  ✓ {isRTL ? "القدرات المتوفرة:" : "Available:"} {selectedOpp.gap_analysis.available_capabilities.join(", ") || "None"}
-                </div>
-                {selectedOpp.gap_analysis.missing_capabilities.length > 0 && (
-                  <div className="text-rose-400">
-                    ✕ {isRTL ? "المتطلبات المفقودة:" : "Missing:"} {selectedOpp.gap_analysis.missing_capabilities.join(", ")}
-                  </div>
-                )}
-                {selectedOpp.gap_analysis.unknown_capabilities.length > 0 && (
-                  <div className="text-amber-400">
-                    ? {isRTL ? "غير محدد / يتطلب مراجعة:" : "Unknown:"} {selectedOpp.gap_analysis.unknown_capabilities.join(", ")}
-                  </div>
-                )}
-              </div>
-              <div className="pt-2 text-[11px] text-slate-500">
-                {selectedOpp.gap_analysis.disclaimer}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => setSelectedOpp(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg"
-              >
-                {isRTL ? "إغلاق" : "Close"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <OpportunityDetailModal
+          opp={selectedOpp}
+          onClose={() => setSelectedOpp(null)}
+          onSubmissionRecorded={(oppId, updatedFlow) => {
+            setOpportunities((prev) =>
+              prev.map((o) =>
+                o.opportunity_id === oppId
+                  ? { ...o, application_flow: updatedFlow }
+                  : o
+              )
+            );
+            if (selectedOpp && selectedOpp.opportunity_id === oppId) {
+              setSelectedOpp({ ...selectedOpp, application_flow: updatedFlow });
+            }
+          }}
+        />
       )}
     </div>
   );

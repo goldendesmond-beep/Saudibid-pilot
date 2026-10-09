@@ -157,6 +157,7 @@ export interface PricingStats {
   p25: number | null;
   p75: number | null;
   currency: string;
+  status?: "OK" | "INSUFFICIENT_VERIFIED_DATA" | string;
 }
 
 export interface SupplierWinRate {
@@ -165,17 +166,28 @@ export interface SupplierWinRate {
   awards_won: number;
   total_value: number;
   win_share: number;
+  win_rate?: number;
+  win_count?: number;
+}
+
+export interface WinRates {
+  total_awards?: number;
+  status?: "OK" | "INSUFFICIENT_VERIFIED_DATA" | string;
+  suppliers: SupplierWinRate[];
 }
 
 export interface TrendPoint {
   period: string;
   count: number;
+  award_count?: number;
   total_value: number;
+  total_amount?: number;
   mean_value: number;
 }
 
 export interface TrendSeries {
   interval: "month" | "quarter" | "year";
+  status?: "OK" | "INSUFFICIENT_VERIFIED_DATA" | string;
   points: TrendPoint[];
 }
 

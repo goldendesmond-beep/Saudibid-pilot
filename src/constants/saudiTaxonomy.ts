@@ -243,6 +243,14 @@ export const SAUDI_WORK_CATEGORIES: WorkCategoryTaxonomy[] = [
     descriptionEn: "Comprehensive operation, routine maintenance, cleaning, and security services",
     descriptionAr: "الصيانة الوقائية والتشغيل الشامل وإدارة الأصول والمرافق",
   },
+  {
+    id: "hospitality_services",
+    nameEn: "Hospitality, Catering & Commercial Services",
+    nameAr: "خدمات الضيافة والإعاشة والتجهيزات الفندقية",
+    cpvFallback: "55000000",
+    descriptionEn: "Hotel operations, event management, corporate catering, and VIP camp services",
+    descriptionAr: "تشغيل الفنادق وإدارة الفعاليات والإعاشة للشركات ومخيمات الضيافة الفاخرة",
+  },
 ];
 
 export const CONTRACTOR_CLASSIFICATIONS: LocalizedOption[] = [
@@ -341,3 +349,231 @@ export const COMMON_CERTIFICATIONS: LocalizedOption[] = [
   { value: "ZATCA_CLEARANCE", labelEn: "ZATCA Tax Clearance", labelAr: "شهادة الزكاة والضريبة والجمارك سارية" },
   { value: "GOSI_CLEARANCE", labelEn: "GOSI Compliance Certificate", labelAr: "شهادة التأمينات الاجتماعية سارية" },
 ];
+
+export interface SectorTaxonomy {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+}
+
+export const SAUDI_SECTORS: SectorTaxonomy[] = [
+  { id: "Hospitality", nameEn: "Hospitality & Hotels", nameAr: "الضيافة والفنادق" },
+  { id: "Healthcare", nameEn: "Healthcare & Hospitals", nameAr: "الرعاية الصحية والمستشفيات" },
+  { id: "Restaurants", nameEn: "Restaurants & Food Services", nameAr: "المطاعم والأغذية" },
+  { id: "Retail/Malls", nameEn: "Retail & Shopping Malls", nameAr: "التجزئة والمراكز التجارية" },
+  { id: "Schools/Universities", nameEn: "Schools & Universities", nameAr: "المدارس والجامعات والتعليم" },
+  { id: "Factories", nameEn: "Factories & Industrial Plants", nameAr: "المصانع والمنشآت الصناعية" },
+  { id: "Warehouses/Logistics", nameEn: "Warehouses & Logistics", nameAr: "المستودعات والخدمات اللوجستية" },
+  { id: "Airports/Ports", nameEn: "Airports & Marine Ports", nameAr: "المطارات والموانئ البحرية" },
+  { id: "Commercial/Residential", nameEn: "Commercial & Residential", nameAr: "المشاريع التجارية والسكنية" },
+  { id: "Government", nameEn: "Government & Municipalities", nameAr: "الجهات الحكومية والبلديات" },
+  { id: "Tourism", nameEn: "Tourism & Entertainment", nameAr: "السياحة والترفيه والوجهات" },
+  { id: "Construction", nameEn: "General Construction & Civils", nameAr: "الإنشاءات والمقاولات العامة" },
+  { id: "Energy/Oil & Gas", nameEn: "Energy & Oil / Gas", nameAr: "الطاقة والنفط والغاز" },
+  { id: "Mining", nameEn: "Mining & Heavy Minerals", nameAr: "التعدين والمعادن الثقيلة" },
+  { id: "Water", nameEn: "Water & Desalination", nameAr: "المياه والتحلية ومعالجة الصرف" },
+  { id: "Telecom/IT", nameEn: "Telecom & Digital Technology", nameAr: "الاتصالات وتقنية المعلومات" },
+];
+
+export interface ServiceCategoryTaxonomy {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  matchedWorkCategoryId: string;
+}
+
+export const SAUDI_SERVICE_CATEGORIES: ServiceCategoryTaxonomy[] = [
+  { id: "hotel_construction", nameEn: "Hotel Construction", nameAr: "إنشاء وتشييد الفنادق", matchedWorkCategoryId: "building_construction" },
+  { id: "fitout", nameEn: "Fit-out & Interior", nameAr: "التشطيبات والديكور الداخلي", matchedWorkCategoryId: "building_construction" },
+  { id: "renovation", nameEn: "Renovation & Refurbishment", nameAr: "الترميم والتجديد والتأهيل", matchedWorkCategoryId: "building_construction" },
+  { id: "operation", nameEn: "Operation & Management (O&M)", nameAr: "التشغيل والإدارة الشاملة", matchedWorkCategoryId: "facility_management" },
+  { id: "maintenance", nameEn: "Routine & Preventive Maintenance", nameAr: "الصيانة الدورية والوقائية", matchedWorkCategoryId: "facility_management" },
+  { id: "facility_management", nameEn: "Facility Management", nameAr: "إدارة المرافق والأصول", matchedWorkCategoryId: "facility_management" },
+  { id: "housekeeping", nameEn: "Housekeeping", nameAr: "خدمات التدبير الفندقي (Housekeeping)", matchedWorkCategoryId: "hospitality_services" },
+  { id: "cleaning", nameEn: "Cleaning & Janitorial Services", nameAr: "النظافة الشاملة والتعقيم", matchedWorkCategoryId: "facility_management" },
+  { id: "manpower", nameEn: "Manpower & Specialized Staffing", nameAr: "القوى العاملة والكوادر المتخصصة", matchedWorkCategoryId: "hospitality_services" },
+  { id: "security", nameEn: "Security & Guarding Services", nameAr: "الحراسات الأمنية والسلامة", matchedWorkCategoryId: "facility_management" },
+  { id: "catering", nameEn: "Catering & Meal Services", nameAr: "الإعاشة وتموين الأغذية والوجبات", matchedWorkCategoryId: "hospitality_services" },
+  { id: "food_supply", nameEn: "Food & Beverage Supply", nameAr: "التوريدات الغذائية والمشروبات", matchedWorkCategoryId: "hospitality_services" },
+  { id: "laundry", nameEn: "Commercial Laundry & Linen", nameAr: "المغاسل والغسيل المركزي للبياضات", matchedWorkCategoryId: "hospitality_services" },
+  { id: "ffe_ose", nameEn: "FF&E / OS&E Furnishing", nameAr: "التأثيث والتجهيزات الفندقية (FF&E / OS&E)", matchedWorkCategoryId: "hospitality_services" },
+  { id: "mep_hvac", nameEn: "MEP / HVAC / Plumbing", nameAr: "الأعمال الكهروميكانيكية والتكييف والسباكة", matchedWorkCategoryId: "mep_works" },
+  { id: "it_cctv", nameEn: "IT / CCTV & Low Current", nameAr: "الأنظمة الذكية والدوائر التلفزيونية والاتصالات", matchedWorkCategoryId: "it_telecom" },
+  { id: "landscaping", nameEn: "Landscaping & Irrigation", nameAr: "تنسيق الحدائق وشبكات الري", matchedWorkCategoryId: "roads_infrastructure" },
+  { id: "transportation", nameEn: "Transportation & Shuttle Fleet", nameAr: "النقل وسيارات الخدمات والرحلات", matchedWorkCategoryId: "facility_management" },
+  { id: "hotel_supplies", nameEn: "Hotel Amenities & Supplies", nameAr: "المستلزمات والمستهلكات الفندقية", matchedWorkCategoryId: "hospitality_services" },
+];
+
+export interface ManpowerIntelligence {
+  role: string;
+  quantity: number | "UNKNOWN";
+  skills: string[] | "UNKNOWN";
+  experience: string;
+  duration: string;
+  shift: string;
+  accommodation: string;
+  transportation: string;
+  mobilization_date: string;
+  location: string;
+  client: string;
+  main_contractor: string;
+  deadline: string;
+}
+
+export const DEFAULT_UNKNOWN_MANPOWER: ManpowerIntelligence = {
+  role: "UNKNOWN",
+  quantity: "UNKNOWN",
+  skills: "UNKNOWN",
+  experience: "UNKNOWN",
+  duration: "UNKNOWN",
+  shift: "UNKNOWN",
+  accommodation: "UNKNOWN",
+  transportation: "UNKNOWN",
+  mobilization_date: "UNKNOWN",
+  location: "UNKNOWN",
+  client: "UNKNOWN",
+  main_contractor: "UNKNOWN",
+  deadline: "UNKNOWN",
+};
+
+// ==========================================
+// Building Renovation & Restoration Taxonomy
+// ==========================================
+
+export const RENOVATION_CATEGORIES = [
+  "BUILDING_RENOVATION",
+  "BUILDING_RESTORATION",
+  "BUILDING_REHABILITATION",
+  "BUILDING_REFURBISHMENT",
+  "BUILDING_UPGRADE",
+  "INTERIOR_RENOVATION",
+  "EXTERIOR_RENOVATION",
+  "STRUCTURAL_REPAIR",
+  "CONCRETE_REPAIR",
+  "FACADE_REPAIR",
+  "ROOF_REPAIR",
+  "WATERPROOFING",
+  "MEP_RENOVATION",
+  "ELECTRICAL_REHABILITATION",
+  "PLUMBING_REHABILITATION",
+  "HVAC_REPLACEMENT",
+  "FIRE_SAFETY_UPGRADE",
+  "FACILITY_REHABILITATION",
+  "SCHOOL_RENOVATION",
+  "HOSPITAL_RENOVATION",
+  "HOTEL_RENOVATION",
+  "OFFICE_RENOVATION",
+  "MOSQUE_RENOVATION",
+  "GOVERNMENT_BUILDING_RENOVATION",
+  "RESIDENTIAL_RENOVATION",
+  "COMMERCIAL_RENOVATION",
+  "INDUSTRIAL_REHABILITATION",
+  "HERITAGE_RESTORATION",
+  "GENERAL_RENOVATION",
+] as const;
+
+export type RenovationCategory = typeof RENOVATION_CATEGORIES[number];
+
+export const RENOVATION_KEYWORDS_AR = [
+  "ترميم",
+  "ترميم مباني",
+  "إعادة تأهيل",
+  "تأهيل مبنى",
+  "إعادة تأهيل المباني",
+  "تجديد",
+  "تجديد مبنى",
+  "إصلاح مبنى",
+  "إصلاحات إنشائية",
+  "صيانة وترميم",
+  "أعمال ترميم",
+  "أعمال إعادة تأهيل",
+  "تطوير مبنى",
+  "رفع كفاءة مبنى",
+  "ترميم واجهات",
+  "إصلاح خرسانة",
+  "عزل أسطح",
+  "إعادة تأهيل كهرباء",
+  "إعادة تأهيل ميكانيكا",
+  "ترميم تراثي",
+  "تأهيل مرافق",
+];
+
+export const RENOVATION_KEYWORDS_EN = [
+  "renovation",
+  "restoration",
+  "rehabilitation",
+  "refurbishment",
+  "building upgrade",
+  "structural repair",
+  "concrete repair",
+  "facility rehabilitation",
+  "facade repair",
+  "roof repair",
+  "waterproofing",
+  "interior renovation",
+  "exterior renovation",
+  "mep renovation",
+  "heritage restoration",
+  "hotel renovation",
+  "hospital renovation",
+  "school renovation",
+  "mosque renovation",
+];
+
+export function classifyRenovationCategory(text: string): { isRenovation: boolean; category?: RenovationCategory } {
+  if (!text) return { isRenovation: false };
+  const lower = text.toLowerCase();
+
+  const hasArabicKeyword = RENOVATION_KEYWORDS_AR.some((kw) => lower.includes(kw.toLowerCase()));
+  const hasEnglishKeyword = RENOVATION_KEYWORDS_EN.some((kw) => lower.includes(kw));
+
+  if (!hasArabicKeyword && !hasEnglishKeyword) {
+    return { isRenovation: false };
+  }
+
+  // Specific subcategory classification
+  if (lower.includes("heritage") || lower.includes("تراثي") || lower.includes("آثار")) {
+    return { isRenovation: true, category: "HERITAGE_RESTORATION" };
+  }
+  if (lower.includes("facade") || lower.includes("واجهات") || lower.includes("واجهة")) {
+    return { isRenovation: true, category: "FACADE_REPAIR" };
+  }
+  if (lower.includes("concrete") || lower.includes("خرسانة") || lower.includes("إنشائية") || lower.includes("structural")) {
+    return { isRenovation: true, category: lower.includes("concrete") || lower.includes("خرسانة") ? "CONCRETE_REPAIR" : "STRUCTURAL_REPAIR" };
+  }
+  if (lower.includes("roof") || lower.includes("waterproof") || lower.includes("عزل") || lower.includes("أسطح")) {
+    return { isRenovation: true, category: lower.includes("waterproof") || lower.includes("عزل") ? "WATERPROOFING" : "ROOF_REPAIR" };
+  }
+  if (lower.includes("mep") || lower.includes("كهرباء") || lower.includes("ميكانيكا") || lower.includes("تكييف") || lower.includes("hvac")) {
+    if (lower.includes("hvac") || lower.includes("تكييف")) return { isRenovation: true, category: "HVAC_REPLACEMENT" };
+    if (lower.includes("كهرباء") || lower.includes("electrical")) return { isRenovation: true, category: "ELECTRICAL_REHABILITATION" };
+    return { isRenovation: true, category: "MEP_RENOVATION" };
+  }
+  if (lower.includes("hotel") || lower.includes("فندق") || lower.includes("فندقي")) {
+    return { isRenovation: true, category: "HOTEL_RENOVATION" };
+  }
+  if (lower.includes("hospital") || lower.includes("مستشفى") || lower.includes("صحي")) {
+    return { isRenovation: true, category: "HOSPITAL_RENOVATION" };
+  }
+  if (lower.includes("school") || lower.includes("مدرسة") || lower.includes("تعليم")) {
+    return { isRenovation: true, category: "SCHOOL_RENOVATION" };
+  }
+  if (lower.includes("mosque") || lower.includes("مسجد") || lower.includes("جامع")) {
+    return { isRenovation: true, category: "MOSQUE_RENOVATION" };
+  }
+  if (lower.includes("facility") || lower.includes("مرافق") || lower.includes("مرفق")) {
+    return { isRenovation: true, category: "FACILITY_REHABILITATION" };
+  }
+  if (lower.includes("restoration") || lower.includes("ترميم")) {
+    return { isRenovation: true, category: "BUILDING_RESTORATION" };
+  }
+  if (lower.includes("rehabilitation") || lower.includes("تأهيل")) {
+    return { isRenovation: true, category: "BUILDING_REHABILITATION" };
+  }
+  if (lower.includes("refurbishment") || lower.includes("تجديد")) {
+    return { isRenovation: true, category: "BUILDING_REFURBISHMENT" };
+  }
+
+  return { isRenovation: true, category: "BUILDING_RENOVATION" };
+}
+
