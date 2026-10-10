@@ -620,13 +620,20 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
 
           {/* Action buttons */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <button
-              onClick={handleOpenPortal}
-              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors shadow-xs"
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span>{isRTL ? "8. فتح البوابة الرسمية للتقديم" : "8. Open Official Portal"}</span>
-            </button>
+            {howToApply.channel_status !== "NO_VERIFIED_APPLICATION_CHANNEL" ? (
+              <button
+                onClick={handleOpenPortal}
+                className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-colors shadow-xs"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>{isRTL ? "8. فتح البوابة الرسمية للتقديم" : "8. Open Official Portal"}</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 text-slate-400 rounded-lg text-xs font-semibold border border-slate-700">
+                <Lock className="w-4 h-4 text-slate-500" />
+                <span>{isRTL ? "لا توجد بوابة تقديم معتمدة حالياً" : "No Verified Application Portal"}</span>
+              </div>
+            )}
 
             {flow.submission_status !== "SUBMITTED" ? (
               <button

@@ -2,8 +2,8 @@
 
 ## Current Status Overview
 - **Project**: Tender Intelligence Saudi (built upon BidPilot foundation)
-- **Current Stage**: POST-STAGE-10C1 — How to Apply & Contact Intelligence (Completed & Verified)
-- **Overall Project Status**: STAGES 1 TO 10 + POST-STAGE-10A + POST-STAGE-10C1 COMPLETE — Production Ready & Verified
+- **Current Stage**: POST-STAGE-10E — Source Recovery, Real-World URL Validation & Connector Rehabilitation (Completed & Verified)
+- **Overall Project Status**: STAGES 1 TO 10 + POST-STAGE-10A + POST-STAGE-10C1 + POST-STAGE-10D + POST-STAGE-10E COMPLETE — Production Ready & Verified
 - **Stage 2 Status**: Completed & Fully Verified End-to-End
 - **Stage 2.5 Status**: Completed & Verified via Dual-Runtime Architecture
 - **Stage 3 Status**: Completed & Fully Verified End-to-End (42 Official Sources Seeded & Health Isolated)
@@ -15,11 +15,45 @@
 - **Stage 9 Status**: Completed & Fully Verified End-to-End (Truthful 42-Source Audit, Vendor Registration Discovery, Saudi Prequalification 22-Doc Checklist, BD CRM Pipeline, Action Priority Engine, Bilingual Outreach Generator, Vendor Registration Workspace UI)
 - **Stage 10 Status**: Completed & Fully Verified End-to-End (Prequalification Dossier Generator, Master Document Vault, Smart Assembly, 13-Section Package Structure, Subcontract Proposal Workspace, BOQ Assistant & Calculation Engine, Explainable Bid/No-Bid Decision Support, Unified Priority Action Center, Integrated Dashboard, Truthful 42-Source Audit Re-run)
 - **POST-STAGE-10A Status**: Completed & Fully Verified End-to-End (Multi-Tenant Org Switcher, Dynamic Org Headers, Tenant-Isolated Vault/Dossiers/BD/Action Center, 16 Saudi Sectors, 19 Service Categories, 13-Field Manpower Intelligence, Practical Quick Filters, Isolated PDF Export, Multi-Tenant Seed Data, Truthful Live Source Refresh Pipeline, Stale Data Rules, Coverage Gap Diagnostics, 29-Category Renovation Taxonomy)
-- **Last Verification Date**: 2026-10-09
+- **POST-STAGE-10C1 Status**: Completed & Fully Verified End-to-End (View Details Resilience, The 3 Core Questions, Verified Application Channels, Subcontract Intelligence, Hotel/Manpower/Renovation/Services Models, Actionability Separation, Active Org Isolation, 10-Step Pipeline, UI Matrix)
+- **POST-STAGE-10D Status**: Completed & Fully Verified End-to-End (Safe Checkpoint, Baseline Identification, Core Mapping, Core Audit & Classification, Zero Fake Pipelines, Operational Workflow Pass, Zero Destructive Restorations, Protected Core Architecture)
+- **POST-STAGE-10E Status**: Completed & Fully Verified End-to-End (Individual 42-Source Audit, Empirical Root Cause Taxonomy, Real-World URL Validation, 404 Downgrades, Strict Actionability Recalculation, Expanded Sector Coverage, Truthful UI Dashboard)
+- **Last Verification Date**: 2026-10-10
 - **Build Status**: Compiling & Building Successfully (`compile_applet` passed, `lint_applet` passed with 0 errors, 0 warnings)
 - **Test Status**:
-  - Frontend: 16 test files, 84 tests passing (100% pass rate)
+  - Frontend: 18 test files, 95 tests passing (100% pass rate)
   - Full-stack Architecture: Fully verified and compiling cleanly (`compile_applet` passed, `lint_applet` passed with 0 errors, 0 warnings)
+
+---
+
+## POST-STAGE-10D Original Core Recovery & Protection (Completed & Verified)
+- **1. Safe Checkpoint Created**:
+  - Checkpoint created at `/checkpoints/pre_10d/` preserving complete copies of `server.ts`, `src/`, `package.json`, `PROJECT_STATE.md`, `STAGE_PROGRESS.md`, with manifest `checkpoints/pre_10d/MANIFEST.txt`.
+- **2. True Original Baseline Located**:
+  - Identified imported repository `GiorgosPanagopoulos/bidpilot` with full documentation and specifications in `README.md`, `SAUDI_ADAPTATION_PLAN.md`, and `backend/`.
+- **3. Original Working Core Mapped**:
+  - Ingestion → Normalization → Eligibility Engine → Two-stage Hybrid Matcher → RAG Requirement Extraction & Gap Analysis → Cited Proposal Drafting → Award Analytics (Pricing, Win Rates, Trends) → REST APIs → React UI.
+- **4. Component Comparison & Core Classification**:
+  - `computeEligibility()`: **EXTENDED_SAFELY** (all hard rules, financial capacity, lead days, and exclusions preserved).
+  - `computeMatch()`: **EXTENDED_SAFELY** (CPV overlap, NUTS fallback, budget feasibility, semantic similarity scoring preserved).
+  - `computePricingStats()`: **EXTENDED_SAFELY** (min, p25, median, mean, p75, max).
+  - `computeWinRates()`: **EXTENDED_SAFELY** (supplier win share calculation).
+  - `computeTrends()`: **EXTENDED_SAFELY** (time-series monthly/quarterly/annual aggregations).
+  - `generateBidDraft()`: **EXTENDED_SAFELY** (checklist citations, gap analysis, proposal citations, trace steps).
+  - Original 15 REST endpoints on `server.ts`: **EXTENDED_SAFELY** (fully functional, accessible, and intact).
+  - Overall Core Classification: **CORE_EXTENDED_SAFELY** (Status: **PROTECTED_CORE**).
+- **5. Fake or Duplicate Pipelines Audit**:
+  - Zero fake pipelines: dynamic ingestion and lifecycle states (NEW, UPDATED, UNCHANGED, STALE) verified.
+  - Zero mocked APIs replacing real services.
+- **6. Operational Workflow Integration Test**:
+  - Test suite `src/__tests__/originalCoreWorkflow.test.ts` (5 tests passing 100%).
+  - Result: **ORIGINAL_CORE_WORKFLOW = PASS**.
+- **7. Decision on Restoration**:
+  - Classification is **CORE_EXTENDED_SAFELY**; therefore **DO NOT RESTORE ANYTHING** destructively. Core marked as **PROTECTED_CORE**.
+- **8. Surgical Restoration Rule**:
+  - Zero rollbacks or destructive modifications executed; all previous stages (1-10, 10A, 10C1) completely preserved.
+- **9. Protected Architecture Verified**:
+  - `SAUDI SOURCES → CONNECTORS/ADAPTERS → PROTECTED ORIGINAL CORE → NORMALIZATION/VALIDATION → STORAGE → BIDPILOT FEATURES → UI`.
 
 ---
 

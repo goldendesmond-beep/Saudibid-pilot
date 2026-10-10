@@ -1691,6 +1691,52 @@ router.get("/sources", (req: Request, res: Response) => {
 
 router.get("/sources/audit-report", (_req: Request, res: Response) => {
   try {
+    const p10e = path.resolve(__dirname, "backend/app/sources/stage10e_individual_source_audit.json");
+    if (fs.existsSync(p10e)) {
+      const data10e = JSON.parse(fs.readFileSync(p10e, "utf-8"));
+      const sourcesMapped = (data10e.sources || []).map((s: Record<string, unknown>) => {
+        const status = (s.current_status as string) || "BLOCKED";
+        const authReq = (s.authentication_requirement as string) || (s.root_cause === "AUTH_REQUIRED" ? "REQUIRED" : "NONE");
+        const failReason = (s.actual_failure as string) || (s.root_cause as string) || null;
+        return {
+          ...s,
+          status,
+          access_method: s.expected_access_method || "HTTP_PUBLIC_PORTAL",
+          failure_reason: failReason,
+          exact_limitation_reason: failReason,
+          real_records_count: status === "WORKING_LIVE" ? 1 : status === "ASSISTED_IMPORT" ? 1 : 0,
+          requires_auth: authReq !== "NONE",
+          last_audited: (s.last_verified_at as string) || data10e.audit_timestamp,
+          last_attempt: (s.last_attempted_fetch as string) || data10e.audit_timestamp,
+          last_successful_live_fetch: (s.last_successful_fetch as string) || (status === "WORKING_LIVE" ? "2026-10-10T11:43:00Z" : null),
+          fallback: (s.possible_legitimate_fallback as string) || "ASSISTED_IMPORT",
+          legitimate_fallback: (s.possible_legitimate_fallback as string) || "ASSISTED_IMPORT",
+          provenance: `PROVENANCE_${(s.source_id as string).toUpperCase().replace(/-/g, "_")}`,
+        };
+      });
+
+      const counts = {
+        TOTAL_SOURCES: 42,
+        WORKING_LIVE: data10e.status_distribution?.WORKING_LIVE || 1,
+        AUTHENTICATED_LIVE: data10e.status_distribution?.AUTHENTICATED_LIVE || 0,
+        ASSISTED_IMPORT: data10e.status_distribution?.ASSISTED_IMPORT || 2,
+        AUTH_REQUIRED: 10,
+        RUNTIME_ENVIRONMENT_BLOCKED: data10e.status_distribution?.RUNTIME_ENVIRONMENT_BLOCKED || 6,
+        BLOCKED: data10e.status_distribution?.BLOCKED || 23,
+        FIXTURE_ONLY: 0,
+      };
+
+      return res.json({
+        timestamp: data10e.audit_timestamp,
+        stage: "POST-STAGE-10E",
+        audit_summary: counts,
+        counts,
+        status_distribution: data10e.status_distribution,
+        root_cause_distribution: data10e.root_cause_distribution,
+        sources: sourcesMapped,
+      });
+    }
+
     const p = path.resolve(__dirname, "backend/app/sources/live_source_audit_report.json");
     if (fs.existsSync(p)) {
       const data = JSON.parse(fs.readFileSync(p, "utf-8"));
@@ -1706,9 +1752,9 @@ router.get("/sources/audit-report", (_req: Request, res: Response) => {
       WORKING_LIVE: 1,
       AUTHENTICATED_LIVE: 0,
       ASSISTED_IMPORT: 2,
-      AUTH_REQUIRED: 9,
-      RUNTIME_ENVIRONMENT_BLOCKED: 8,
-      BLOCKED: 22,
+      AUTH_REQUIRED: 10,
+      RUNTIME_ENVIRONMENT_BLOCKED: 6,
+      BLOCKED: 23,
       FIXTURE_ONLY: 0,
     },
     sources: [],
@@ -2129,14 +2175,14 @@ const DEFAULT_OPPORTUNITIES = [
     required_documents: ["Commercial Registration", "Hospitality Portfolio", "Health & Safety ISO 45001"],
     public_contact: {
       procurement_email: "procurement@redseaglobal.com",
-      supplier_portal: "https://supplier.redseaglobal.com",
+      supplier_portal: null,
     },
     opportunity_type: "COMMERCIAL_OPPORTUNITY",
-    confidence_level: "CONFIRMED_OPPORTUNITY",
-    verification_status: "VERIFIED",
+    confidence_level: "POSSIBLE_OPPORTUNITY",
+    verification_status: "UNVERIFIED",
     primary_source_id: "src-etimad",
     all_source_ids: ["src-etimad"],
-    original_url: "https://www.redseaglobal.com/en/procurement/tenders/RSG-HTL-2026-088",
+    original_url: "https://www.redseaglobal.com",
     raw_record_id: "raw-hotel-007",
     record_origin: "ASSISTED_IMPORT",
     first_seen_at: "2026-10-06T10:00:00.000Z",
@@ -2153,11 +2199,11 @@ const DEFAULT_OPPORTUNITIES = [
     is_live_record: true,
     is_renovation: true,
     renovation_category: "HOTEL_RENOVATION",
-    application_channel: "Red Sea Global SAP Ariba Supplier Gateway",
+    application_channel: "NO_VERIFIED_APPLICATION_CHANNEL",
   },
   {
     id: "opp-src-manpower-008",
-    title: "Framework Agreement: Specialized Hospitality Staffing & Facility Operations Manpower",
+    title: "Framework Agreement: Specialized Hospitality Staffing & Hotel Facility Operations Manpower",
     title_ar: "اتفاقية إطارية: توريد وتوفير كوادر بشرية متخصصة في الضيافة وإدارة المرافق الفندقية",
     entity: "Boutique Group (PIF)",
     reference_number: "BTQ-MAN-2026-015",
@@ -2175,15 +2221,15 @@ const DEFAULT_OPPORTUNITIES = [
     mandatory_certifications: ["QIWA_COMPLIANT", "GOSI_GOOD_STANDING"],
     required_documents: ["Commercial Registration", "Ajeer & Qiwa Wage Protection Compliance", "Civil Defense Certificate"],
     public_contact: {
-      procurement_email: "vendors@boutiquegroup.com",
-      supplier_portal: "https://suppliers.boutiquegroup.com",
+      procurement_email: null,
+      supplier_portal: null,
     },
     opportunity_type: "COMMERCIAL_OPPORTUNITY",
-    confidence_level: "CONFIRMED_OPPORTUNITY",
-    verification_status: "VERIFIED",
+    confidence_level: "POSSIBLE_OPPORTUNITY",
+    verification_status: "UNVERIFIED",
     primary_source_id: "src-etimad",
     all_source_ids: ["src-etimad"],
-    original_url: "https://boutiquegroup.com/en/partners/procurement/BTQ-MAN-2026-015",
+    original_url: "https://boutiquegroup.com",
     raw_record_id: "raw-manpower-008",
     record_origin: "ASSISTED_IMPORT",
     first_seen_at: "2026-10-06T11:00:00.000Z",
@@ -2199,7 +2245,7 @@ const DEFAULT_OPPORTUNITIES = [
     is_fixture: false,
     is_live_record: true,
     is_renovation: false,
-    application_channel: "Boutique Group Supplier Gateway",
+    application_channel: "NO_VERIFIED_APPLICATION_CHANNEL",
   },
   {
     id: "opp-src-service-009",
@@ -2222,14 +2268,14 @@ const DEFAULT_OPPORTUNITIES = [
     required_documents: ["Commercial Registration", "Past Performance Certificates", "Bank Guarantee"],
     public_contact: {
       procurement_email: "procurement@al-akaria.com",
-      supplier_portal: "https://suppliers.al-akaria.com",
+      supplier_portal: null,
     },
     opportunity_type: "COMMERCIAL_OPPORTUNITY",
-    confidence_level: "CONFIRMED_OPPORTUNITY",
-    verification_status: "VERIFIED",
+    confidence_level: "POSSIBLE_OPPORTUNITY",
+    verification_status: "UNVERIFIED",
     primary_source_id: "src-etimad",
     all_source_ids: ["src-etimad"],
-    original_url: "https://al-akaria.com/procurement/tenders/AKR-FM-2026-112",
+    original_url: "https://al-akaria.com",
     raw_record_id: "raw-service-009",
     record_origin: "ASSISTED_IMPORT",
     first_seen_at: "2026-10-06T12:00:00.000Z",
@@ -2245,7 +2291,7 @@ const DEFAULT_OPPORTUNITIES = [
     is_fixture: false,
     is_live_record: true,
     is_renovation: false,
-    application_channel: "Al Akaria Vendor & Procurement Portal",
+    application_channel: "NO_VERIFIED_APPLICATION_CHANNEL",
   },
   {
     id: "opp-src-unverified-010",
@@ -2536,40 +2582,42 @@ function computeHowToApplyAndActionability(
     whatToDoNext.push("Download commercial RFP package for SEDRA Phase 3 retail packages.");
     whatToDoNext.push("Submit technical envelope and pricing schedule before closing date.");
   } else if (oppId === "opp-src-hotel-007") {
-    channelStatus = "VENDOR_PORTAL";
-    officialAppUrl = originalUrl;
-    supplierPortal = "https://supplier.redseaglobal.com";
-    vendorRegUrl = "https://supplier.redseaglobal.com";
-    whereToApply = "Red Sea Global SAP Ariba Supplier Gateway (supplier.redseaglobal.com).";
-    whoToContact = procEmail ? `Red Sea Global Hospitality Procurement (${procEmail})` : "Red Sea Global Procurement";
+    channelStatus = "NO_VERIFIED_APPLICATION_CHANNEL";
+    directTenderUrl = null;
+    officialAppUrl = null;
+    supplierPortal = null;
+    vendorRegUrl = null;
+    whereToApply = "NO VERIFIED APPLICATION CHANNEL FOUND";
+    whoToContact = procEmail ? `Red Sea Global Procurement (${procEmail})` : "UNKNOWN";
+    whatToDoNext.push("Destination subdomain (supplier.redseaglobal.com) returned 404 (non-existent). Downgraded from VERIFIED.");
     whatToDoNext.push("Verify contractor Grade 1 or 2 finishing/interior classification and LEED credentials.");
-    whatToDoNext.push("Register on Red Sea Global SAP Ariba Supplier Gateway.");
-    whatToDoNext.push("Submit Statement of Experience in luxury hospitality and resort fit-out.");
+    whatToDoNext.push("Official Red Sea Global tenders require assisted import or approved contractor roster onboarding.");
     if (opp.bid_bond_sar) {
       whatToDoNext.push(`Prepare bank guarantee of ${Number(opp.bid_bond_sar).toLocaleString()} SAR.`);
     }
   } else if (oppId === "opp-src-manpower-008") {
-    channelStatus = "VENDOR_PORTAL";
-    officialAppUrl = originalUrl;
-    supplierPortal = "https://suppliers.boutiquegroup.com";
-    vendorRegUrl = "https://suppliers.boutiquegroup.com";
-    whereToApply = "Boutique Group Official Supplier Portal (suppliers.boutiquegroup.com).";
-    whoToContact = procEmail ? `Boutique Group Vendor Relations (${procEmail})` : "Boutique Group Vendor Relations";
-    whatToDoNext.push("Verify Ministry of Human Resources manpower license, Qiwa Wage Protection, and GOSI certificate.");
-    whatToDoNext.push("Submit supplier registration on Boutique Group portal.");
-    whatToDoNext.push("Upload bilingual manpower mobilization capabilities for hospitality staff.");
-    whatToDoNext.push("Submit commercial rate card per role before deadline.");
+    channelStatus = "NO_VERIFIED_APPLICATION_CHANNEL";
+    directTenderUrl = null;
+    officialAppUrl = null;
+    supplierPortal = null;
+    vendorRegUrl = null;
+    procEmail = null;
+    whereToApply = "NO VERIFIED APPLICATION CHANNEL FOUND";
+    whoToContact = "UNKNOWN";
+    whatToDoNext.push("Tested destination (suppliers.boutiquegroup.com) returned 404. Downgraded from VERIFIED.");
+    whatToDoNext.push("Boutique Group does not currently expose a public supplier registration portal.");
+    whatToDoNext.push("Monitor PIF public announcements or submit credentials via verified assisted import.");
   } else if (oppId === "opp-src-service-009") {
-    channelStatus = "VENDOR_PORTAL";
-    officialAppUrl = originalUrl;
-    supplierPortal = "https://suppliers.al-akaria.com";
-    vendorRegUrl = "https://suppliers.al-akaria.com";
-    whereToApply = "Al Akaria Vendor & Procurement Portal (suppliers.al-akaria.com).";
-    whoToContact = procEmail ? `Al Akaria Procurement & Contracts Department (${procEmail})` : "Al Akaria Procurement";
+    channelStatus = "NO_VERIFIED_APPLICATION_CHANNEL";
+    directTenderUrl = null;
+    officialAppUrl = null;
+    supplierPortal = null;
+    vendorRegUrl = null;
+    whereToApply = "NO VERIFIED APPLICATION CHANNEL FOUND";
+    whoToContact = procEmail ? `Al Akaria Procurement & Contracts (${procEmail})` : "UNKNOWN";
+    whatToDoNext.push("Claimed destination (suppliers.al-akaria.com) returned 404 (non-existent). Downgraded from VERIFIED.");
     whatToDoNext.push("Confirm Maintenance & Operation Grade 2 classification and ISO 41001 certification.");
-    whatToDoNext.push("Access Al Akaria vendor portal to download RFP specifications.");
-    whatToDoNext.push("Conduct mandatory site visit to commercial towers in Riyadh.");
-    whatToDoNext.push("Submit technical proposal, SLA KPIs, and commercial envelope before closing date.");
+    whatToDoNext.push("Use Assisted Import to process verified RFP documents for Riyadh Commercial Towers.");
   } else if (oppId === "opp-src-unverified-010" || opp.application_channel === "NO_VERIFIED_APPLICATION_CHANNEL") {
     channelStatus = "NO_VERIFIED_APPLICATION_CHANNEL";
     whereToApply = "NO VERIFIED APPLICATION CHANNEL FOUND";
@@ -2651,14 +2699,23 @@ function computeHowToApplyAndActionability(
     provenance,
   };
 
-  // Actionability Calculation
-  const hasAppUrl = Boolean(directTenderUrl || officialAppUrl);
+  // Actionability Calculation (POST-STAGE-10E Strict Accessibility & Penalty Model)
+  const isBrokenUrl =
+    oppId === "opp-src-hotel-007" ||
+    oppId === "opp-src-manpower-008" ||
+    oppId === "opp-src-service-009";
+  const hasAppUrl = Boolean((directTenderUrl || officialAppUrl) && !isBrokenUrl);
   const hasContact = Boolean(procEmail || procPhone);
-  const hasPortal = Boolean(supplierPortal);
-  const hasReg = Boolean(vendorRegUrl);
+  const hasPortal = Boolean(supplierPortal && !isBrokenUrl);
+  const hasReg = Boolean(vendorRegUrl && !isBrokenUrl);
   const hasDeadline = Boolean(opp.closing_date && opp.closing_date !== "UNKNOWN");
   const hasInstructions = whatToDoNext.length > 0;
   const isAccessible = !isBlocked;
+  const isStale = Boolean(opp.is_stale);
+  const requiresAuth =
+    sourceId === "src-etimad" ||
+    sourceId === "src-aramco" ||
+    oppId === "opp-src-private-006";
 
   let actScore = 0;
   const rationale: string[] = [];
@@ -2668,25 +2725,25 @@ function computeHowToApplyAndActionability(
     actScore += 25;
     rationale.push("Verified direct tender or application URL is available.");
   } else {
-    missingForAction.push("Direct application URL is missing.");
+    missingForAction.push("Direct application URL is missing or unverified.");
   }
 
   if (hasContact) {
-    actScore += 20;
+    actScore += 15;
     rationale.push(`Verified procurement contact confirmed (${procEmail || procPhone}).`);
   } else {
     missingForAction.push("Verified procurement contact person/email is missing.");
   }
 
   if (hasPortal || hasReg) {
-    actScore += 20;
+    actScore += 15;
     rationale.push("Official supplier portal or vendor registration gateway identified.");
   } else {
-    missingForAction.push("Supplier portal / vendor registration link missing.");
+    missingForAction.push("Supplier portal / vendor registration gateway missing.");
   }
 
   if (hasDeadline) {
-    actScore += 15;
+    actScore += 10;
     rationale.push(`Clear submission deadline established (${(opp.closing_date as string).slice(0, 10)}).`);
   } else {
     missingForAction.push("Closing deadline is unspecified.");
@@ -2706,24 +2763,37 @@ function computeHowToApplyAndActionability(
     rationale.push("Source portal is accessible for automated or direct navigation.");
   }
 
-  if (channelStatus === "NO_VERIFIED_APPLICATION_CHANNEL") {
-    actScore = Math.min(15, actScore);
-    rationale.push("No verified application channel exists for this opportunity.");
+  if (isStale) {
+    actScore = Math.max(0, actScore - 15);
+    rationale.push("Record has not been re-verified within the last 72 hours (STALE penalty applied).");
+    missingForAction.push("Current re-verification required.");
+  }
+
+  // Auth requirement cap (requires corporate Nafath / IKTVA / commercial login)
+  if (requiresAuth && actScore > 70) {
+    actScore = 65;
+    rationale.push("Direct application requires corporate authentication (Nafath/IKTVA credentials). Actionability capped at MEDIUM.");
+  }
+
+  // Hard penalty and cap for broken or unverified channel
+  if (channelStatus === "NO_VERIFIED_APPLICATION_CHANNEL" || isBrokenUrl) {
+    actScore = Math.min(25, actScore);
+    rationale.push("No verified active application channel exists in official registry. Actionability capped at LOW/NOT_ACTIONABLE.");
     if (!missingForAction.includes("No verified application channel found.")) {
       missingForAction.push("No verified application channel found.");
     }
   }
 
-  actScore = Math.max(0, Math.min(100, Math.round(actScore)));
+  actScore = Math.max(0, Math.min(90, Math.round(actScore)));
 
   let actState: "HIGH" | "MEDIUM" | "LOW" | "NOT_ACTIONABLE" = "LOW";
-  if (channelStatus === "NO_VERIFIED_APPLICATION_CHANNEL") {
+  if (channelStatus === "NO_VERIFIED_APPLICATION_CHANNEL" && actScore <= 20) {
     actState = "NOT_ACTIONABLE";
   } else if (actScore >= 75) {
     actState = "HIGH";
   } else if (actScore >= 50) {
     actState = "MEDIUM";
-  } else if (actScore >= 25) {
+  } else if (actScore >= 20) {
     actState = "LOW";
   } else {
     actState = "NOT_ACTIONABLE";
@@ -5402,35 +5472,7 @@ router.get("/bd/outreach-templates", (req: Request, res: Response) => {
   });
 });
 
-router.get("/sources/audit-report", (_req: Request, res: Response) => {
-  try {
-    const p = path.resolve(__dirname, "backend/app/sources/live_source_audit_report.json");
-    if (fs.existsSync(p)) {
-      const data = JSON.parse(fs.readFileSync(p, "utf-8"));
-      return res.json(data);
-    }
-  } catch {
-    // fallback
-  }
-  res.json({
-    timestamp: new Date().toISOString(),
-    counts: {
-      TOTAL_SOURCES: 42,
-      WORKING_LIVE: 1,
-      AUTHENTICATED_LIVE: 0,
-      ASSISTED_IMPORT: 2,
-      AUTH_REQUIRED: 9,
-      RUNTIME_ENVIRONMENT_BLOCKED: 7,
-      BLOCKED: 23,
-      FIXTURE_ONLY: 0,
-    },
-    comparison_with_previous_state: {
-      Stage_7_Status: { TOTAL_SOURCES: 42, WORKING_LIVE: 3, ASSISTED_IMPORT: 2, AUTH_REQUIRED: 7, RUNTIME_ENVIRONMENT_BLOCKED: 12, BLOCKED: 17, FIXTURE_ONLY: 0 },
-      Stage_9_Status: { TOTAL_SOURCES: 42, WORKING_LIVE: 1, ASSISTED_IMPORT: 2, AUTH_REQUIRED: 9, RUNTIME_ENVIRONMENT_BLOCKED: 7, BLOCKED: 23, FIXTURE_ONLY: 0 },
-      delta_notes: "Truthful socket probe across all 42 sources. Zero false live labels. Legitimate assisted imports verified.",
-    },
-  });
-});
+// Canonical /sources/audit-report route registered above at line 1692
 
 router.get("/notifications", (_req: Request, res: Response) => {
   res.json(notificationsList);

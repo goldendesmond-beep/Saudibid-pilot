@@ -178,6 +178,13 @@ export const OpportunityExplorer: React.FC<OpportunityExplorerProps> = ({
       // 1. Search Query
       if (!filterReason && searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
+        const isHotelQuery =
+          q === "hotel" ||
+          q === "hospitality" ||
+          q === "resort" ||
+          q === "فندق" ||
+          q === "فندقي" ||
+          q === "ضيافة";
         const match =
           (opp.opportunity_title || "").toLowerCase().includes(q) ||
           (opp.opportunity_title_ar || "").toLowerCase().includes(q) ||
@@ -187,6 +194,14 @@ export const OpportunityExplorer: React.FC<OpportunityExplorerProps> = ({
           (opp.work_category || "").toLowerCase().includes(q) ||
           (opp.sector || "").toLowerCase().includes(q) ||
           (opp.renovation_category || "").toLowerCase().includes(q) ||
+          (isHotelQuery && (
+            (opp.sector || "").toLowerCase().includes("hospitality") ||
+            (opp.sector || "").toLowerCase().includes("tourism") ||
+            (opp.opportunity_title || "").toLowerCase().includes("hotel") ||
+            (opp.opportunity_title || "").toLowerCase().includes("resort") ||
+            (opp.opportunity_title_ar || "").includes("فندقي") ||
+            (opp.opportunity_title_ar || "").includes("ضيافة")
+          )) ||
           (q === "ترميم" && (opp.is_renovation || (opp.work_category || "").includes("ترميم") || (opp.opportunity_title_ar || "").includes("ترميم") || (opp.opportunity_title_ar || "").includes("تأهيل")));
         if (!match) filterReason = isRTL ? "لا يطابق كلمات البحث" : "Search term mismatch";
       }
@@ -250,8 +265,13 @@ export const OpportunityExplorer: React.FC<OpportunityExplorerProps> = ({
 
       // 6b. Sector Industry Filter (Hospitality, Healthcare, Energy, etc.)
       if (!filterReason && sectorFilter !== "all") {
-        const text = `${opp.opportunity_title} ${opp.entity} ${opp.work_category || ""}`.toLowerCase();
-        const sMatch = text.includes(sectorFilter.toLowerCase()) || (opp as unknown as { sector?: string }).sector === sectorFilter;
+        const text = `${opp.opportunity_title} ${opp.entity} ${opp.work_category || ""} ${(opp as unknown as { sector?: string }).sector || ""}`.toLowerCase();
+        const isHospFilter = sectorFilter.toLowerCase().includes("hosp") || sectorFilter.toLowerCase().includes("tour");
+        const sMatch =
+          text.includes(sectorFilter.toLowerCase()) ||
+          (opp as unknown as { sector?: string }).sector === sectorFilter ||
+          (isHospFilter && ((opp as unknown as { sector?: string }).sector || "").toLowerCase().includes("hospitality")) ||
+          (isHospFilter && text.includes("hospitality"));
         if (!sMatch) {
           filterReason = isRTL ? `خارج قطاع ${sectorFilter}` : `Outside ${sectorFilter} sector`;
         }
