@@ -1,4 +1,5 @@
 import { api } from "./client";
+import type { SourceNavigationRecord } from "../services/sourceNavigationService";
 
 export interface SaudiSourceData {
   id: string;
@@ -94,4 +95,7 @@ export const sourcesApi = {
   register: (source: Partial<SaudiSourceData> & { name: string; url: string }) =>
     api.post<SaudiSourceData>("/sources/register", source),
   getAuditReport: () => api.get<SourceAuditReportResponse>("/sources/audit-report"),
+  getNavigationList: () =>
+    api.get<{ timestamp: string; total_sources: number; sources: SourceNavigationRecord[] }>("/sources/navigation"),
+  getNavigation: (id: string) => api.get<SourceNavigationRecord>(`/sources/navigation/${id}`),
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "../i18n/useTranslation";
 import {
   ShieldCheck,
@@ -14,20 +14,60 @@ import {
   GitCommit,
   Database,
   ArrowRight,
+  Compass,
+  Search,
 } from "lucide-react";
 import { sourceRecoveryApi, type PrioritySourceRecoveryItem } from "../api/sourceRecovery";
 import { sourcesApi, type DetailedSourceAuditItem, type SourceAuditReportResponse } from "../api/sources";
+import { SourceNavigationLauncher } from "./SourceNavigationLauncher";
+import {
+  getAllSourceNavigations,
+  getSourceNavigation,
+  type SourceNavigationRecord,
+} from "../services/sourceNavigationService";
 
 export const SourceHealthDashboard: React.FC = () => {
   const { isRTL } = useTranslation();
-  const [activeTab, setActiveTab] = useState<"audit" | "ingestion_flow" | "recovery">("audit");
+  const [activeTab, setActiveTab] = useState<"audit" | "manual_browser" | "ingestion_flow" | "recovery">("manual_browser");
   const [filter, setFilter] = useState<string>("all");
+  const [selectedManualSector, setSelectedManualSector] = useState<string>("all");
+  const [manualSearchQuery, setManualSearchQuery] = useState<string>("");
+  const [selectedNavSource, setSelectedNavSource] = useState<SourceNavigationRecord | null>(null);
   const [recoveryItems, setRecoveryItems] = useState<PrioritySourceRecoveryItem[]>([]);
   const [auditReport, setAuditReport] = useState<SourceAuditReportResponse | null>(null);
   const [auditSources, setAuditSources] = useState<DetailedSourceAuditItem[]>([]);
   const [isLoadingAudit, setIsLoadingAudit] = useState<boolean>(true);
   const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
   const [importSuccessMessage, setImportSuccessMessage] = useState<string | null>(null);
+
+  const allNavigations = useMemo(() => getAllSourceNavigations(), []);
+
+  const filteredNavigations = useMemo(() => {
+    return allNavigations.filter((s) => {
+      if (selectedManualSector === "hospitality") {
+        const match = s.sectors.some((sec) => sec.toLowerCase().includes("hosp") || sec.toLowerCase().includes("hotel"));
+        if (!match) return false;
+      } else if (selectedManualSector === "construction") {
+        const match = s.sectors.some((sec) => sec.toLowerCase().includes("construct") || sec.toLowerCase().includes("subcontract"));
+        if (!match) return false;
+      } else if (selectedManualSector === "manpower") {
+        const match = s.sectors.some((sec) => sec.toLowerCase().includes("manpower") || sec.toLowerCase().includes("facility") || sec.toLowerCase().includes("clean"));
+        if (!match) return false;
+      } else if (selectedManualSector === "renovation") {
+        const match = s.sectors.some((sec) => sec.toLowerCase().includes("renov") || sec.toLowerCase().includes("restor"));
+        if (!match) return false;
+      }
+
+      if (manualSearchQuery.trim()) {
+        const q = manualSearchQuery.trim().toLowerCase();
+        const inName = s.source_name.toLowerCase().includes(q) || s.source_name_ar.includes(q);
+        const inTerms = s.suggested_search_terms.some((t) => t.toLowerCase().includes(q));
+        const inDomain = s.official_domain.toLowerCase().includes(q);
+        if (!inName && !inTerms && !inDomain) return false;
+      }
+      return true;
+    });
+  }, [allNavigations, selectedManualSector, manualSearchQuery]);
 
   // Form State
   const [importSourceId, setImportSourceId] = useState<string>("src-etimad");
@@ -220,6 +260,17 @@ export const SourceHealthDashboard: React.FC = () => {
         {/* Tab switch */}
         <div className="flex items-center gap-2 pt-2 border-t border-slate-800 overflow-x-auto">
           <button
+            onClick={() => setActiveTab("manual_browser")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shrink-0 flex items-center gap-1.5 ${
+              activeTab === "manual_browser"
+                ? "bg-slate-800 border-blue-500/80 text-blue-400"
+                : "border-slate-800 text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>{isRTL ? "المتصفح اليدوي للمصادر (42 مصدراً)" : "Manual Source Browser (42)"}</span>
+          </button>
+          <button
             onClick={() => setActiveTab("audit")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shrink-0 ${
               activeTab === "audit"
@@ -371,6 +422,119 @@ export const SourceHealthDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* Tab: Manual Source Browser (42 Official Saudi Sources) */}
+      {activeTab === "manual_browser" && (
+        <div className="space-y-4">
+          {/* Header & Sector Filter Controls */}
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+                  <Compass className="w-4 h-4 text-blue-400" />
+                  <span>
+                    {isRTL
+                      ? "المتصفح اليدوي للمصادر الرسمية السعودية (42 مصدراً معتمداً):"
+                      : "Official Saudi Source Manual Browser (42 Verified Sources):"}
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  {isRTL
+                    ? "تصفح بوابات المناقصات، بوابات الموردين، وإعلانات العقود الرسمية مباشرة في متصفحك حتى وإن تعذر الجلب الآلي بسبب قيود جدار الحماية أو نفاذ موحد."
+                    : "Directly open official tender search portals, supplier gateways, and contract disclosure pages in your device browser even when automated scraping is gated by WAF or Nafath 2FA."}
+                </p>
+              </div>
+
+              {/* Quick stats badge */}
+              <div className="flex items-center gap-2 text-xs font-mono font-bold">
+                <span className="px-2.5 py-1 rounded-lg bg-blue-950/40 text-blue-300 border border-blue-800/40">
+                  {isRTL ? `${filteredNavigations.length} من 42 مصدراً` : `${filteredNavigations.length} / 42 Sources`}
+                </span>
+              </div>
+            </div>
+
+            {/* Filter Chips & Search input */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                <button
+                  type="button"
+                  onClick={() => setSelectedManualSector("all")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                    selectedManualSector === "all"
+                      ? "bg-slate-800 text-white border border-slate-600"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {isRTL ? "جميع المصادر (42)" : "All Sources (42)"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedManualSector("hospitality")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                    selectedManualSector === "hospitality"
+                      ? "bg-purple-900/40 text-purple-300 border border-purple-700/60"
+                      : "text-slate-400 hover:text-purple-300"
+                  }`}
+                >
+                  {isRTL ? "الضيافة والفنادق" : "Hospitality & Hotels"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedManualSector("construction")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                    selectedManualSector === "construction"
+                      ? "bg-emerald-900/40 text-emerald-300 border border-emerald-700/60"
+                      : "text-slate-400 hover:text-emerald-300"
+                  }`}
+                >
+                  {isRTL ? "المقاولات وعقود الباطن" : "Construction & Subcontracts"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedManualSector("manpower")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                    selectedManualSector === "manpower"
+                      ? "bg-blue-900/40 text-blue-300 border border-blue-700/60"
+                      : "text-slate-400 hover:text-blue-300"
+                  }`}
+                >
+                  {isRTL ? "التشغيل والقوى العاملة" : "FM & Manpower"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedManualSector("renovation")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                    selectedManualSector === "renovation"
+                      ? "bg-amber-900/40 text-amber-300 border border-amber-700/60"
+                      : "text-slate-400 hover:text-amber-300"
+                  }`}
+                >
+                  {isRTL ? "الترميم والتأهيل" : "Renovation & Restoration"}
+                </button>
+              </div>
+
+              {/* Search box */}
+              <div className="relative min-w-[220px]">
+                <Search className="w-3.5 h-3.5 absolute top-2.5 start-2.5 text-slate-400" />
+                <input
+                  type="text"
+                  value={manualSearchQuery}
+                  onChange={(e) => setManualSearchQuery(e.target.value)}
+                  placeholder={isRTL ? "ابحث في المصادر أو الكلمات..." : "Filter sources or keywords..."}
+                  className="w-full bg-slate-950/80 border border-slate-800 rounded-lg ps-8 pe-3 py-1.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {filteredNavigations.map((s) => (
+              <SourceNavigationLauncher key={s.source_id} source={s} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Tab: Detailed 42-Source Audit Table */}
       {activeTab === "audit" && (
         <div className="space-y-4">
@@ -463,6 +627,7 @@ export const SourceHealthDashboard: React.FC = () => {
                     <th className="py-3 px-3 text-start font-semibold">{isRTL ? "متطلب المصادقة" : "Auth Requirement"}</th>
                     <th className="py-3 px-3 text-start font-semibold">{isRTL ? "المسار البديل" : "Fallback"}</th>
                     <th className="py-3 px-3 text-start font-semibold">{isRTL ? "المنشأ" : "Provenance"}</th>
+                    <th className="py-3 px-3 text-center font-semibold">{isRTL ? "التنقل اليدوي" : "Manual Access"}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/80 text-slate-200">
@@ -555,6 +720,22 @@ export const SourceHealthDashboard: React.FC = () => {
                         {/* Provenance */}
                         <td className="py-3 px-3 font-mono text-[10px] text-slate-300">
                           {provenance}
+                        </td>
+
+                        {/* Manual Access Launcher Action */}
+                        <td className="py-3 px-3 text-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const nav = getSourceNavigation(src.source_id);
+                              if (nav) setSelectedNavSource(nav);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 hover:border-blue-500 transition-colors"
+                            title={isRTL ? "فتح لوحة التصفح اليدوي للمصدر" : "Launch manual source browser"}
+                          >
+                            <Compass className="w-3 h-3 text-blue-400" />
+                            <span>{isRTL ? "تصفح" : "Launch"}</span>
+                          </button>
                         </td>
                       </tr>
                     );
@@ -810,6 +991,31 @@ export const SourceHealthDashboard: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Selected Source Navigation Launcher Modal */}
+      {selectedNavSource && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-xs">
+          <div className="max-w-2xl w-full bg-slate-900 border border-slate-700 rounded-2xl p-5 sm:p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <Compass className="w-5 h-5 text-blue-400" />
+                <h3 className="font-bold text-sm text-slate-100">
+                  {isRTL ? "لوحة التصفح اليدوي للمصدر الرسمي" : "Official Source Manual Navigation Launcher"}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedNavSource(null)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+              >
+                &times;
+              </button>
+            </div>
+
+            <SourceNavigationLauncher source={selectedNavSource} compact={false} />
           </div>
         </div>
       )}

@@ -36,6 +36,7 @@ import {
   type AwardRecord,
 } from "./src/engine/procurement";
 import { classifyRenovationCategory } from "./src/constants/saudiTaxonomy";
+import { getAllSourceNavigations, getSourceNavigation } from "./src/services/sourceNavigationService";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1759,6 +1760,23 @@ router.get("/sources/audit-report", (_req: Request, res: Response) => {
     },
     sources: [],
   });
+});
+
+router.get("/sources/navigation", (_req: Request, res: Response) => {
+  const navigations = getAllSourceNavigations();
+  res.json({
+    timestamp: new Date().toISOString(),
+    total_sources: navigations.length,
+    sources: navigations,
+  });
+});
+
+router.get("/sources/navigation/:id", (req: Request, res: Response) => {
+  const nav = getSourceNavigation(req.params.id);
+  if (!nav) {
+    return res.status(404).json({ detail: `Source navigation record for '${req.params.id}' not found` });
+  }
+  res.json(nav);
 });
 
 router.get("/sources/:id", (req: Request, res: Response) => {

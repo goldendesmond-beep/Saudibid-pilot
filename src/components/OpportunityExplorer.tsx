@@ -18,7 +18,14 @@ import {
   Lock,
   SlidersHorizontal,
   Award,
+  Globe,
+  ExternalLink,
 } from "lucide-react";
+import {
+  getSourceNavigationsBySector,
+  getHospitalityAndHotelSources,
+  getAllSourceNavigations,
+} from "../services/sourceNavigationService";
 
 const SAUDI_CITIES_AND_INDUSTRIAL = [
   { nameEn: "Riyadh", nameAr: "الرياض", isIndustrial: false },
@@ -1063,15 +1070,92 @@ export const OpportunityExplorer: React.FC<OpportunityExplorerProps> = ({
               );
             }
 
+            const queryTerm = searchQuery.trim().toLowerCase();
+            const isHospitalitySearch =
+              queryTerm.includes("hotel") ||
+              queryTerm.includes("hosp") ||
+              queryTerm.includes("resort") ||
+              queryTerm.includes("فندق") ||
+              queryTerm.includes("ضيافة") ||
+              Boolean(selectedSector?.toLowerCase().includes("hosp"));
+
+            const suggestedSources = isHospitalitySearch
+              ? getHospitalityAndHotelSources().slice(0, 4)
+              : queryTerm
+              ? getSourceNavigationsBySector(queryTerm).slice(0, 4)
+              : getAllSourceNavigations().slice(0, 4);
+
             return (
-              <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-8 text-center text-slate-400">
-                <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto mb-2 opacity-80" />
-                <p className="text-sm font-medium">
-                  {isRTL ? "لا توجد فرص تطابق معايير التصفية المحددة" : "No opportunities match the current filter criteria"}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  {isRTL ? "جرب توسيع نطاق المنطقة أو نوع المنافسة أو تصفح الفرص المستبعدة بالأسفل" : "Try broadening region or sector filters, or view filtered-out opportunities below."}
-                </p>
+              <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6 sm:p-8 text-center text-slate-400 space-y-4">
+                <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto opacity-80" />
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-slate-200">
+                    {isRTL
+                      ? "لا توجد فرص موثقة حالياً تطابق معايير البحث والتصفية"
+                      : "No verified opportunities currently found matching criteria"}
+                  </p>
+                  <p className="text-xs text-slate-400 max-w-xl mx-auto leading-relaxed">
+                    {isRTL
+                      ? "نظراً لعدم توفر مناقصات مفحوصة حية لهذه المعايير، يمكنك التصفح اليدوي للمصادر الرسمية المعتمدة أدناه خارج المنصة:"
+                      : "Because no live verified notices are currently confirmed for these terms, you can browse verified official sources manually below:"}
+                  </p>
+                </div>
+
+                {/* Suggested Manual Sources */}
+                {suggestedSources.length > 0 && (
+                  <div className="pt-2 max-w-3xl mx-auto space-y-2.5 text-start">
+                    <div className="flex items-center justify-between text-xs font-bold text-[#c9a84c] border-b border-slate-800 pb-1">
+                      <span className="flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-blue-400" />
+                        <span>{isRTL ? "استكشف وتصفح المصادر الرسمية يدوياً:" : "BROWSE OFFICIAL SOURCES MANUALLY:"}</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-500 font-normal">
+                        {isRTL ? "فتح في المتصفح الخارجي" : "OPENS IN DEVICE BROWSER"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {suggestedSources.map((s) => {
+                        const targetUrl = s.official_tenders_url || s.official_search_url || s.official_supplier_portal_url || s.official_home_url;
+                        return (
+                          <div
+                            key={s.source_id}
+                            className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 flex flex-col justify-between space-y-2 hover:border-slate-700 transition-colors"
+                          >
+                            <div>
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="font-bold text-xs text-slate-200">
+                                  {isRTL ? s.source_name_ar || s.source_name : s.source_name}
+                                </span>
+                                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
+                                  {s.diagnostic_reason}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
+                                {isRTL ? s.description_ar : s.description_en}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/60">
+                              <span className="text-[10px] text-slate-500 truncate max-w-[120px]">
+                                {s.official_domain}
+                              </span>
+                              <a
+                                href={targetUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors shrink-0"
+                              >
+                                <span>{isRTL ? "افتح المصدر" : "Open Source"}</span>
+                                <ExternalLink className="w-2.5 h-2.5 text-blue-400" />
+                              </a>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })()

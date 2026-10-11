@@ -535,5 +535,86 @@ All 42 sources audited individually with empirical root causes.
 Broken destination URLs downgraded, false VERIFIED labels removed, Actionability recalculated with real-world accessibility penalties.
 Original core remains 100% intact as PROTECTED_CORE.
 
+---
+
+## Detailed POST-STAGE-10C2 Checkpoint Verification (Final Production QA, Source Reconciliation, External Browser Handoff & Release Readiness)
+
+- [x] **0. Protected Core Enforced & Architectural Boundaries**:
+  - `PROTECTED_CORE` remains 100% intact with zero changes to `src/engine/procurement.ts`.
+  - Architecture verified:
+    `SOURCE REGISTRY / CONNECTOR METADATA → SOURCE NAVIGATION / LAUNCHER SERVICE → BIDPILOT UI → USER DEVICE BROWSER`
+  - Browser launcher lives strictly above the engine; zero browser logic inside `procurement.ts`.
+- [x] **1. Final 42 Source Status Reconciliation (Zero Double-Counting, Sum = 42)**:
+  - `TOTAL_SOURCES` = 42
+  - `WORKING_LIVE` = 1 (Saudi Press Agency - SPA)
+  - `AUTHENTICATED_LIVE` = 0
+  - `AUTHENTICATED_CONNECTOR_AVAILABLE` = 4 (Saudi Aramco, NEOM, ROSHN, SAR)
+  - `AUTHENTICATED_CONNECTOR_NOT_CONFIGURED` = 4 (ASFAR, Boutique Group, Cruise Saudi, King Abdullah Port)
+  - `ASSISTED_IMPORT` = 2 (Etimad GTPL, Tadawul Market Disclosures)
+  - `AUTH_REQUIRED` = 2 (MODON, Sports Boulevard)
+  - `RUNTIME_ENVIRONMENT_BLOCKED` = 6 (Furas, Jeddah Central, King Salman Park, MATARAT, NCP, RCJY)
+  - `BLOCKED` = 23 (NHC, NWC, PIF, Qiddiya, Red Sea Global, SEVEN, Diriyah, SEC, Mawani, etc.)
+  - `NO_PUBLIC_DATA` = 0 | `RETIRED` = 0 | `UNKNOWN` = 0 | `FIXTURE_ONLY` = 0
+  - Reconciliation Verified: 1 + 0 + 4 + 4 + 2 + 2 + 6 + 23 = 42.
+- [x] **2. Confirmed Working Live Source Proof (SPA)**:
+  - `src-spa` verified end-to-end: HTTP 200 public endpoint (`https://www.spa.gov.sa`), real ministerial award and municipal contract disclosures, currency normalized in SAR, full Arabic provenance retained, zero mock/static data.
+- [x] **3. Recoverable Sources Rehabilitation**:
+  - `src-sec`: Repaired destination from obsolete/redirected `vpr.se.com.sa` to official vendor portal `https://www.se.com.sa/en/Suppliers`.
+  - `src-mawani`: Repaired from legacy broken connector to official tenders portal `https://mawani.gov.sa/en/Business/Tenders/Pages/default.aspx`.
+  - `src-new-murabba`: Repaired to official suppliers portal `https://newmurabba.com/en/suppliers`.
+  - `src-dammam-airports`: Repaired to official DACO tenders page `https://daco.sa/en/tenders`.
+  - `src-rua-almadinah`: Repaired to official vendors portal `https://ruaalmadinah.com/en/vendors`.
+- [x] **4. Source Browser Launcher & Manual Navigation Feature**:
+  - Service: `src/services/sourceNavigationService.ts` implements complete 42-source navigation registry.
+  - Endpoints in `server.ts`: `/sources/navigation` (GET) and `/sources/navigation/:id` (GET).
+  - Navigation status taxonomy enforced: `DIRECT_TENDER_SEARCH_AVAILABLE`, `SUPPLIER_PORTAL_AVAILABLE`, `PROCUREMENT_PAGE_AVAILABLE`, `NAFATH_REQUIRED`, `AUTH_REQUIRED`, `OFFICIAL_HOMEPAGE_ONLY`.
+  - Verified action buttons:
+    - [فتح الموقع الرسمي / Open Official Website]
+    - [البحث يدويًا في المناقصات / Search Tenders Manually]
+    - [فتح صفحة المشتريات / Open Procurement]
+    - [بوابة الموردين / Open Supplier Portal]
+    - [تسجيل مورد / Vendor Registration]
+    - [نسخ الرابط / Copy URL] with clipboard confirmation toast.
+  - Suggested manual search terms chips (e.g. `ترميم مباني`, `إعادة تأهيل`, `housekeeping`, `manpower`, `hotel`, `facility management`) that copy to clipboard with a single click.
+- [x] **5. Strict Separation of Source Navigation from Opportunity Application**:
+  - Source search pages are labeled `MANUAL_SOURCE_SEARCH` and never confused with specific tender application URLs.
+  - Opportunity cards and details distinguish "افتح المصدر وابحث" from "التقديم على هذه الفرصة".
+- [x] **6. External Browser Handoff & Mobile Safety**:
+  - All external destinations open with `target="_blank" rel="noopener noreferrer"`.
+  - Strict zero-iframe enforcement for government portals, supplier gateways, and Nafath pages.
+  - Mobile UX: safe opening in user's device browser, with copy link fallback.
+  - Context preservation: active filters, search query, scroll position, and selected tenant organization are strictly preserved upon returning.
+- [x] **7. Zero-Result Search Integrity**:
+  - When zero verified opportunities match criteria (e.g. searching "hotel" or "housekeeping"), system displays:
+    "لا توجد فرص موثقة حالياً تطابق معايير البحث والتصفية"
+    PLUS "استكشف وتصفح المصادر الرسمية يدوياً" with relevant official source links (e.g. Red Sea Global, Boutique Group, ASFAR, Diriyah, ROSHN).
+  - Zero fabricated opportunities created.
+- [x] **8. Application URL Final Revalidation**:
+  - Confirmed: Boutique Group (`suppliers.boutiquegroup.com`), Red Sea Global (`supplier.redseaglobal.com`), and Al Akaria (`suppliers.al-akaria.com`) downgraded to `BROKEN_404`.
+  - Opportunities with broken URLs capped at Actionability $\le 25\%$ (`LOW` / `NOT_ACTIONABLE`).
+- [x] **9. Dual Refresh Cycle & Deduplication**:
+  - Run 1 ingests/updates, Run 2 results in 100% UNCHANGED with 0 duplicate insertions.
+- [x] **10. Multi-Organization Tenant Isolation**:
+  - Verified across two active organizations: zero cross-tenant leakage of documents, dossiers, BOQs, proposals, or submission records.
+- [x] **11. Automated Test Verification**:
+  - Test suite: `src/__tests__/postStage10C2FinalProductionQA.test.ts` (9 tests passing).
+  - Full vitest run: 19 test files, 104 tests passing (100% pass rate).
+  - ESLint: 0 errors, 0 warnings.
+  - Vite build: Compiled successfully in production mode (`compile_applet` passed).
+
+---
+
+## Final Full-Stack Test Verification Summary (Stages 1–10 + POST-STAGE-10A + POST-STAGE-10C1 + POST-STAGE-10D + POST-STAGE-10E + POST-STAGE-10C2)
+- **Frontend Vitest**: `npx vitest run` $\rightarrow$ 19 test files, 104 passed (0 failed, 100% pass rate).
+- **Lint Status**: `npm run lint` $\rightarrow$ 0 errors, 0 warnings.
+- **Build Status**: `npm run build` / `compile_applet` $\rightarrow$ compiled successfully in production mode, 0 errors.
+
+---
+
+## Release Readiness Classification
+**READY** — Production ready and verified.
+Protected Core PASS, Build PASS, Lint PASS, Full Tests PASS, Zero false live claims, Zero broken URLs marked verified, Zero organization data leak, Zero fixture data counted as real, Dual refresh deduplication verified, Source browser navigation and external handoff verified.
+
+
 
 

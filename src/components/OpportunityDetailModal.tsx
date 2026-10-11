@@ -18,7 +18,10 @@ import {
   Lock,
   Layers,
   Info,
+  Globe,
+  Search,
 } from "lucide-react";
+import { getSourceNavigation } from "../services/sourceNavigationService";
 
 interface OpportunityDetailModalProps {
   opp: IntelligenceEvaluationResult | null;
@@ -162,6 +165,8 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
     { num: 9, labelEn: "User Submits", labelAr: "التقديم الفعلي" },
     { num: 10, labelEn: "Recorded", labelAr: "التوثيق" },
   ];
+
+  const sourceNav = getSourceNavigation(opp.primary_source_id);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-xs overflow-y-auto">
@@ -411,6 +416,72 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
                   </span>
                 )}
             </div>
+
+            {/* Manual Source Access alternative when direct application is unavailable */}
+            {howToApply.channel_status === "NO_VERIFIED_APPLICATION_CHANNEL" && sourceNav && (
+              <div className="mt-3 p-3.5 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-1 text-xs">
+                  <span className="font-bold text-[#c9a84c] flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-blue-400" />
+                    <span>{isRTL ? "التصفح اليدوي للمصدر الرسمي (Manual Source Access):" : "MANUAL SOURCE ACCESS (Official Source Exploration):"}</span>
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                    {isRTL ? "استكشاف مستقل" : "INDEPENDENT EXPLORATION"}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  {isRTL
+                    ? "تنبيه الشفافية: هذا الخيار لزيارة البوابة الرسمية للمصدر والبحث يدويًا في المناقصات أو تسجيل الموردين. هذا ليس رابط تقديم مباشر لهذه الفرصة."
+                    : "Integrity Notice: Use these links to visit the official source portal to search for notices or register as a supplier. This is NOT a direct application URL for this specific opportunity."}
+                </p>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {sourceNav.official_home_url && (
+                    <a
+                      href={sourceNav.official_home_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold transition-colors"
+                    >
+                      <Globe className="w-3.5 h-3.5 text-blue-400" />
+                      <span>{isRTL ? "افتح المصدر وابحث" : "Open Source & Search"}</span>
+                      <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </a>
+                  )}
+                  {(sourceNav.official_tenders_url || sourceNav.official_search_url) && (
+                    <a
+                      href={sourceNav.official_tenders_url || sourceNav.official_search_url || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-900/40 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-700/60 rounded-lg text-xs font-bold transition-colors"
+                    >
+                      <Search className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>{isRTL ? "البحث يدويًا في المناقصات" : "Search Tenders Manually"}</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                  {sourceNav.official_supplier_portal_url && (
+                    <a
+                      href={sourceNav.official_supplier_portal_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs transition-colors"
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-[#c9a84c]" />
+                      <span>{isRTL ? "بوابة الموردين" : "Supplier Portal"}</span>
+                      <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </a>
+                  )}
+                </div>
+                {sourceNav.suggested_search_terms && sourceNav.suggested_search_terms.length > 0 && (
+                  <div className="pt-1.5 border-t border-slate-800/80 text-[11px] text-slate-400">
+                    <span className="font-semibold text-slate-300 me-1.5">
+                      {isRTL ? "كلمات بحث مقترحة:" : "Suggested manual terms:"}
+                    </span>
+                    <span>{sourceNav.suggested_search_terms.slice(0, 4).join(" • ")}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Source Instructions if applicable */}
             {howToApply.source_instructions && (
